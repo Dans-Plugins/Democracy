@@ -1,0 +1,13 @@
+name: ExamplePonderPlugin
+version: '${project.version}'
+main: preponderous.exampleponderplugin.ExamplePonderPlugin
+api-version: 1.13
+depend: [MedievalFactions]
+
+commands:
+  exampleponderplugin:
+  epp:
+
+permissions:
+  epp.help:
+    default: true
