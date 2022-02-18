@@ -1,2 +1,2 @@
-./mf-installation-script.sh
-./ponder-installation-script.sh
+./install-ponder.sh
+./install-medieval-factions.sh
