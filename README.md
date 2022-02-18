@@ -1,5 +1,5 @@
 # Democracy
-This expansion for Medieval Factions is intended to allow nations to be democratic.
+This expansion for Medieval Factions is intended to allow nations to hold democratic elections.
 
 ## Authors and acknowledgement
 ### Developers
