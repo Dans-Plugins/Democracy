@@ -71,7 +71,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>preponderous</groupId>
+            <groupId>com.github.Preponderous-Software</groupId>
             <artifactId>ponder</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
