@@ -1,17 +1,18 @@
-package dansplugins.examplemfexpansion;
+package dansplugins.democracy;
 
 import dansplugins.factionsystem.MedievalFactions;
 import dansplugins.factionsystem.externalapi.MedievalFactionsAPI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
-import dansplugins.examplemfexpansion.commands.DefaultCommand;
-import dansplugins.examplemfexpansion.commands.HelpCommand;
-import dansplugins.examplemfexpansion.eventhandlers.JoinHandler;
-import dansplugins.examplemfexpansion.services.LocalConfigService;
-import preponderous.ponder.minecraft.abs.AbstractPluginCommand;
-import preponderous.ponder.minecraft.abs.PonderPlugin;
-import preponderous.ponder.minecraft.spigot.tools.EventHandlerRegistry;
+import dansplugins.democracy.commands.DefaultCommand;
+import dansplugins.democracy.commands.HelpCommand;
+import dansplugins.democracy.eventhandlers.JoinHandler;
+import dansplugins.democracy.services.LocalConfigService;
+import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
+import preponderous.ponder.minecraft.bukkit.abs.PonderBukkitPlugin;
+import preponderous.ponder.minecraft.bukkit.services.CommandService;
+import preponderous.ponder.minecraft.bukkit.tools.EventHandlerRegistry;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,16 +21,17 @@ import java.util.Arrays;
 /**
  * @author Daniel McCoy Stephenson
  */
-public final class ExampleMFExpansion extends PonderPlugin {
-    private static ExampleMFExpansion instance;
+public final class Democracy extends PonderBukkitPlugin {
+    private static Democracy instance;
     private final String pluginVersion = "v" + getDescription().getVersion();
     private final MedievalFactionsAPI medievalFactionsAPI = MedievalFactions.getInstance().getAPI();
+    private CommandService commandService;
 
     /**
      * This can be used to get the instance of the main class that is managed by itself.
      * @return The managed instance of the main class.
      */
-    public static ExampleMFExpansion getInstance() {
+    public static Democracy getInstance() {
         return instance;
     }
 
@@ -54,7 +56,6 @@ public final class ExampleMFExpansion extends PonderPlugin {
 
         registerEventHandlers();
         initializeCommandService();
-        getPonderAPI().setDebug(false);
     }
 
     /**
@@ -79,7 +80,7 @@ public final class ExampleMFExpansion extends PonderPlugin {
             return defaultCommand.execute(sender);
         }
 
-        return getPonderAPI().getCommandService().interpretCommand(sender, label, args);
+        return commandService.interpretAndExecuteCommand(sender, label, args);
     }
 
     /**
@@ -119,7 +120,7 @@ public final class ExampleMFExpansion extends PonderPlugin {
      * Registers the event handlers of the plugin using Ponder.
      */
     private void registerEventHandlers() {
-        EventHandlerRegistry eventHandlerRegistry = new EventHandlerRegistry(getPonderAPI());
+        EventHandlerRegistry eventHandlerRegistry = new EventHandlerRegistry();
         ArrayList<Listener> listeners = new ArrayList<>(Arrays.asList(
                 new JoinHandler()
         ));
@@ -133,6 +134,6 @@ public final class ExampleMFExpansion extends PonderPlugin {
         ArrayList<AbstractPluginCommand> commands = new ArrayList<>(Arrays.asList(
                 new HelpCommand()
         ));
-        getPonderAPI().getCommandService().initialize(commands, "That command wasn't found.");
+        commandService.initialize(commands, "That command wasn't found.");
     }
 }

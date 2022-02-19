@@ -1,1 +1,0 @@
-mvn install:install-file -Dfile=${PATH_TO_MF_JAR} -DgroupId=dansplugins -DartifactId=medievalfactions -Dversion=${MF_VERSION} -Dpackaging=Jar

@@ -1,6 +1,6 @@
-package dansplugins.examplemfexpansion.utils;
+package dansplugins.democracy.utils;
 
-import dansplugins.examplemfexpansion.ExampleMFExpansion;
+import dansplugins.democracy.Democracy;
 
 /**
  * @author Daniel McCoy Stephenson
@@ -21,7 +21,7 @@ public class Logger {
     }
 
     public void log(String message) {
-        if (ExampleMFExpansion.getInstance().isDebugEnabled()) {
+        if (Democracy.getInstance().isDebugEnabled()) {
             System.out.println("[ExamplePonderPlugin] " + message);
         }
     }

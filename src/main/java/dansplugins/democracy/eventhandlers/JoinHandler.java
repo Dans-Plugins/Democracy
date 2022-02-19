@@ -1,4 +1,4 @@
-package dansplugins.examplemfexpansion.eventhandlers;
+package dansplugins.democracy.eventhandlers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

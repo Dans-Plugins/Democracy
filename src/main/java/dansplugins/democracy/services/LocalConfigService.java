@@ -1,4 +1,4 @@
-package dansplugins.examplemfexpansion.services;
+package dansplugins.democracy.services;
 
 /*
     To add a new config option, the following methods must be altered:
@@ -7,7 +7,7 @@ package dansplugins.examplemfexpansion.services;
     - sendConfigList()
  */
 
-import dansplugins.examplemfexpansion.ExampleMFExpansion;
+import dansplugins.democracy.Democracy;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -34,16 +34,16 @@ public class LocalConfigService {
     public void saveMissingConfigDefaultsIfNotPresent() {
         // set version
         if (!getConfig().isString("version")) {
-            getConfig().addDefault("version", ExampleMFExpansion.getInstance().getVersion());
+            getConfig().addDefault("version", Democracy.getInstance().getVersion());
         } else {
-            getConfig().set("version", ExampleMFExpansion.getInstance().getVersion());
+            getConfig().set("version", Democracy.getInstance().getVersion());
         }
 
         // save config options
         if (!isSet("debugMode")) { getConfig().set("debugMode", false); }
 
         getConfig().options().copyDefaults(true);
-        ExampleMFExpansion.getInstance().saveConfig();
+        Democracy.getInstance().saveConfig();
     }
 
     public void setConfigOption(String option, String value, CommandSender sender) {
@@ -66,7 +66,7 @@ public class LocalConfigService {
             }
 
             // save
-            ExampleMFExpansion.getInstance().saveConfig();
+            Democracy.getInstance().saveConfig();
             altered = true;
         } else {
             sender.sendMessage(ChatColor.RED + "That config option wasn't found.");
@@ -84,7 +84,7 @@ public class LocalConfigService {
     }
 
     public FileConfiguration getConfig() {
-        return ExampleMFExpansion.getInstance().getConfig();
+        return Democracy.getInstance().getConfig();
     }
 
     public boolean isSet(String option) {

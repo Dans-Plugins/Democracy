@@ -1,6 +1,6 @@
-name: ExamplePonderPlugin
+name: Democracy
 version: '${project.version}'
-main: preponderous.exampleponderplugin.ExamplePonderPlugin
+main: dansplugins.democracy.Democracy
 api-version: 1.13
 depend: [MedievalFactions]
 
