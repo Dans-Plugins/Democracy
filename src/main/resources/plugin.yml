@@ -5,9 +5,9 @@ api-version: 1.13
 depend: [MedievalFactions]
 
 commands:
-  exampleponderplugin:
-  epp:
+  democracy:
+  d:
 
 permissions:
-  epp.help:
+  d.help:
     default: true
