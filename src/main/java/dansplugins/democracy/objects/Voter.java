@@ -1,6 +1,5 @@
 package dansplugins.democracy.objects;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -12,7 +11,6 @@ import org.bukkit.entity.Player;
 public class Voter {
     private final UUID playerUUID;
     private final UUID electionUUID;
-    private final ArrayList<UUID> voters = new ArrayList<>();
 
     public Voter(Player player, Election election) {
         playerUUID = player.getUniqueId();
@@ -25,9 +23,5 @@ public class Voter {
 
     public UUID getElectionUUID() {
         return electionUUID;
-    }
-
-    public int getNumElectors() {
-        return voters.size();
     }
 }

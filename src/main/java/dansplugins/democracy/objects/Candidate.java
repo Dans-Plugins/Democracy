@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class Candidate {
     private final UUID playerUUID;
     private final UUID electionUUID;
-    private final ArrayList<Voter> voters = new ArrayList<>();
+    private final ArrayList<UUID> voterUUIDs = new ArrayList<>();
 
     public Candidate(Player player, Election election) {
         playerUUID = player.getUniqueId();
@@ -28,35 +28,31 @@ public class Candidate {
     }
 
     public int getNumVoter() {
-        return voters.size();
+        return voterUUIDs.size();
     }
 
     public boolean isVoter(UUID playerUUID) {
-        return getVoter(playerUUID) != null;
-    }
-
-    public Voter getVoter(UUID playerUUID) {
-        for (Voter voter : voters) {
-            if (voter.getPlayerUUID().equals(playerUUID)) {
-                return voter;
+        for (UUID voter : voterUUIDs) {
+            if (voter.equals(playerUUID)) {
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
-    public boolean addVoter(Voter voter) {
-        if (isVoter(voter.getPlayerUUID())) {
+    public boolean addVoter(UUID playerUUID) {
+        if (isVoter(playerUUID)) {
             return false;
         }
-        voters.add(voter);
+        voterUUIDs.add(playerUUID);
         return true;
     }
 
-    public boolean removeVoter(Voter voter) {
-        if (!isVoter(voter.getPlayerUUID())) {
+    public boolean removeVoter(UUID playerUUID) {
+        if (!isVoter(playerUUID)) {
             return false;
         }
-        voters.remove(voter);
+        voterUUIDs.remove(playerUUID);
         return true;
     }
 }

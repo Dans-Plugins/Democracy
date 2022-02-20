@@ -11,8 +11,8 @@ import java.util.UUID;
 public class Election {
     private final UUID electionUUID;
     private final LocalDateTime creationTimestamp;
-    private final ArrayList<Candidate> candidates = new ArrayList<Candidate>();
-    private final ArrayList<Voter> voters = new ArrayList<Voter>();
+    private final ArrayList<UUID> candidateUUIDs = new ArrayList<>();
+    private final ArrayList<UUID> voterUUIDs = new ArrayList<>();
 
     public Election() {
         electionUUID = UUID.randomUUID();
@@ -28,60 +28,52 @@ public class Election {
     }
 
     public boolean isCandidate(UUID playerUUID) {
-        return getCandidate(playerUUID) != null;
-    }
-
-    public Candidate getCandidate(UUID playerUUID) {
-        for (Candidate candidate : candidates) {
-            if (candidate.getPlayerUUID().equals(playerUUID)) {
-                return candidate;
+        for (UUID candidate : candidateUUIDs) {
+            if (candidate.equals(playerUUID)) {
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
-    public boolean addCandidate(Candidate candidate) {
-        if (isCandidate(candidate.getPlayerUUID())) {
+    public boolean addCandidate(UUID playerUUID) {
+        if (isCandidate(playerUUID)) {
             return false;
         }
-        candidates.add(candidate);
+        candidateUUIDs.add(playerUUID);
         return true;
     }
 
-    public boolean removeCandidate(Candidate candidate) {
-        if (!isCandidate(candidate.getPlayerUUID())) {
+    public boolean removeCandidate(UUID playerUUID) {
+        if (!isCandidate(playerUUID)) {
             return false;
         }
-        candidates.remove(candidate);
+        candidateUUIDs.remove(playerUUID);
         return true;
     }
 
     public boolean isVoter(UUID playerUUID) {
-        return getVoter(playerUUID) != null;
-    }
-
-    public Voter getVoter(UUID playerUUID) {
-        for (Voter voter : voters) {
-            if (voter.getPlayerUUID().equals(playerUUID)) {
-                return voter;
+        for (UUID voter : voterUUIDs) {
+            if (voter.equals(playerUUID)) {
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
-    public boolean addVoter(Voter voter) {
-        if (isVoter(voter.getPlayerUUID())) {
+    public boolean addVoter(UUID playerUUID) {
+        if (isVoter(playerUUID)) {
             return false;
         }
-        voters.add(voter);
+        voterUUIDs.add(playerUUID);
         return true;
     }
 
-    public boolean removeVoter(Voter voter) {
-        if (!isVoter(voter.getPlayerUUID())) {
+    public boolean removeVoter(UUID playerUUID) {
+        if (!isVoter(playerUUID)) {
             return false;
         }
-        voters.remove(voter);
+        voterUUIDs.remove(playerUUID);
         return true;
     }
 }
