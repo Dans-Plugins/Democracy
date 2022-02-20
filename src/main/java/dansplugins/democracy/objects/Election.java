@@ -12,6 +12,7 @@ public class Election {
     private final UUID electionUUID;
     private final LocalDateTime creationTimestamp;
     private final ArrayList<Candidate> candidates = new ArrayList<Candidate>();
+    private final ArrayList<Voter> voters = new ArrayList<Voter>();
 
     public Election() {
         electionUUID = UUID.randomUUID();
@@ -52,6 +53,35 @@ public class Election {
             return false;
         }
         candidates.remove(candidate);
+        return true;
+    }
+
+    public boolean isVoter(UUID playerUUID) {
+        return getVoter(playerUUID) != null;
+    }
+
+    public Voter getVoter(UUID playerUUID) {
+        for (Voter voter : voters) {
+            if (voter.getPlayerUUID().equals(playerUUID)) {
+                return voter;
+            }
+        }
+        return null;
+    }
+
+    public boolean addVoter(Voter voter) {
+        if (isVoter(voter.getPlayerUUID())) {
+            return false;
+        }
+        voters.add(voter);
+        return true;
+    }
+
+    public boolean removeVoter(Voter voter) {
+        if (!isVoter(voter.getPlayerUUID())) {
+            return false;
+        }
+        voters.remove(voter);
         return true;
     }
 }
