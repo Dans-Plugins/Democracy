@@ -11,3 +11,13 @@ commands:
 permissions:
   d.help:
     default: true
+  d.info:
+    default: true
+  d.vote:
+    default: true
+  d.run:
+    default: true
+  d.dropout:
+    default: true
+  d.start:
+    default: true
