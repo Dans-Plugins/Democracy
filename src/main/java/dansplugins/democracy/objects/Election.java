@@ -9,11 +9,17 @@ import java.util.UUID;
  * @since Februrary 20th, 2022
  */
 public class Election {
+    private final UUID electionUUID;
     private final LocalDateTime creationTimestamp;
     private final ArrayList<Candidate> candidates = new ArrayList<Candidate>();
 
     public Election() {
-       creationTimestamp = LocalDateTime.now();
+        electionUUID = UUID.randomUUID();
+        creationTimestamp = LocalDateTime.now();
+    }
+
+    public UUID getUUID() {
+        return electionUUID;
     }
 
     public LocalDateTime getCreationTimestamp() {
