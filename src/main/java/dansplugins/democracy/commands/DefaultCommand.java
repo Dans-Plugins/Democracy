@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
+ * This command is intended to allow players to get information about the plugin.
  * @author Daniel McCoy Stephenson
  */
 public class DefaultCommand extends AbstractPluginCommand {
@@ -26,7 +27,7 @@ public class DefaultCommand extends AbstractPluginCommand {
     }
 
     @Override
-    public boolean execute(CommandSender commandSender, String[] strings) {
+    public boolean execute(CommandSender commandSender, String[] args) {
         return execute(commandSender);
     }
 }
