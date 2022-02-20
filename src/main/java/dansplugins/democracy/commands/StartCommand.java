@@ -17,10 +17,10 @@ import java.util.UUID;
  * This command is intended to allow faction leaders to create elections.
  * @author Daniel McCoy Stephenson
  */
-public class CreateCommand extends AbstractPluginCommand {
+public class StartCommand extends AbstractPluginCommand {
 
-    public CreateCommand() {
-        super(new ArrayList<>(Arrays.asList("create")), new ArrayList<>(Arrays.asList("d.create")));
+    public StartCommand() {
+        super(new ArrayList<>(Arrays.asList("start")), new ArrayList<>(Arrays.asList("d.start")));
     }
 
     @Override
@@ -33,7 +33,7 @@ public class CreateCommand extends AbstractPluginCommand {
 
         MF_Faction faction = Democracy.getInstance().getMedievalFactionsAPI().getFaction(player);
         if (faction == null || !faction.getOwner().equals(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You must be the owner of a faction to create an election.");
+            player.sendMessage(ChatColor.RED + "You must be the owner of a faction to start an election.");
             return false;
         }
 
@@ -42,7 +42,7 @@ public class CreateCommand extends AbstractPluginCommand {
             player.sendMessage(ChatColor.RED + "An election is already in progress.");
             return false;
         }
-        player.sendMessage(ChatColor.RED + "Election has been created.");
+        player.sendMessage(ChatColor.RED + "Election has been started.");
         return true;
     }
 
