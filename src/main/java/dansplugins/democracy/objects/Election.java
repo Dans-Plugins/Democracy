@@ -2,21 +2,28 @@ package dansplugins.democracy.objects;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
+
+import org.bukkit.entity.Player;
+
+import preponderous.ponder.misc.abs.Savable;
 
 /**
  * @author Daniel McCoy Stephenson
  * @since Februrary 20th, 2022
  */
-public class Election {
+public class Election implements Savable {
     private final UUID electionUUID;
     private final LocalDateTime creationTimestamp;
+    private final UUID creatorUUID;
     private final ArrayList<UUID> candidateUUIDs = new ArrayList<>();
     private final ArrayList<UUID> voterUUIDs = new ArrayList<>();
 
-    public Election() {
+    public Election(Player player) {
         electionUUID = UUID.randomUUID();
         creationTimestamp = LocalDateTime.now();
+        creatorUUID = player.getUniqueId();
     }
 
     public UUID getUUID() {
@@ -25,6 +32,10 @@ public class Election {
 
     public LocalDateTime getCreationTimestamp() {
         return creationTimestamp;
+    }
+
+    public UUID getCreator() {
+        return creatorUUID;
     }
 
     public boolean isCandidate(UUID playerUUID) {
@@ -75,5 +86,16 @@ public class Election {
         }
         voterUUIDs.remove(playerUUID);
         return true;
+    }
+
+    @Override
+    public Map<String, String> save() {
+        // TODO: implement
+        return null;
+    }
+
+    @Override
+    public void load(Map<String, String> data) {
+        // TODO: implement
     }
 }

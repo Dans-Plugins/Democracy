@@ -1,15 +1,18 @@
 package dansplugins.democracy.objects;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
+
+import preponderous.ponder.misc.abs.Savable;
 
 /**
  * @author Daniel McCoy Stephenson
  * @since Februrary 20th, 2022
  */
-public class Candidate {
+public class Candidate implements Savable {
     private final UUID playerUUID;
     private final UUID electionUUID;
     private final ArrayList<UUID> voterUUIDs = new ArrayList<>();
@@ -54,5 +57,16 @@ public class Candidate {
         }
         voterUUIDs.remove(playerUUID);
         return true;
+    }
+
+    @Override
+    public Map<String, String> save() {
+        // TODO: implement
+        return null;
+    }
+
+    @Override
+    public void load(Map<String, String> data) {
+        // TODO: implement
     }
 }
