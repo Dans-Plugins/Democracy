@@ -5,3 +5,8 @@
 - run as a candidate
 - start an election
 - end an election
+
+### Domain Objects
+- Election
+- Candidate
+- Voter
