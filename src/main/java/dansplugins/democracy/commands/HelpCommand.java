@@ -19,6 +19,11 @@ public class HelpCommand extends AbstractPluginCommand {
     @Override
     public boolean execute(CommandSender commandSender) {
         commandSender.sendMessage(ChatColor.AQUA + "/d help");
+        commandSender.sendMessage(ChatColor.AQUA + "/d info");
+        commandSender.sendMessage(ChatColor.AQUA + "/d vote");
+        commandSender.sendMessage(ChatColor.AQUA + "/d run");
+        commandSender.sendMessage(ChatColor.AQUA + "/d dropout");
+        commandSender.sendMessage(ChatColor.AQUA + "/d create");
         return true;
     }
 

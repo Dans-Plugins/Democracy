@@ -5,8 +5,14 @@ import dansplugins.factionsystem.externalapi.MedievalFactionsAPI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
+
+import dansplugins.democracy.commands.CreateCommand;
 import dansplugins.democracy.commands.DefaultCommand;
+import dansplugins.democracy.commands.DropOutCommand;
 import dansplugins.democracy.commands.HelpCommand;
+import dansplugins.democracy.commands.InfoCommand;
+import dansplugins.democracy.commands.RunCommand;
+import dansplugins.democracy.commands.VoteCommand;
 import dansplugins.democracy.eventhandlers.JoinHandler;
 import dansplugins.democracy.services.LocalConfigService;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
@@ -132,7 +138,12 @@ public final class Democracy extends PonderBukkitPlugin {
      */
     private void initializeCommandService() {
         ArrayList<AbstractPluginCommand> commands = new ArrayList<>(Arrays.asList(
-                new HelpCommand()
+                new HelpCommand(),
+                new CreateCommand(),
+                new DropOutCommand(),
+                new InfoCommand(),
+                new RunCommand(),
+                new VoteCommand()
         ));
         commandService.initialize(commands, "That command wasn't found.");
     }
