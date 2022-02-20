@@ -27,6 +27,9 @@ public class ElectionFactory {
         if (!success) {
             return null;
         }
+        // TODO: add faction members to election as voters
+        // TODO: inform faction that election has begun
+        // TODO: send mail to faction members via the Mailboxes plugin
         return election.getUUID();
     }
 }
