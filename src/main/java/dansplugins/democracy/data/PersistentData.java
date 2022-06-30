@@ -8,21 +8,9 @@ import dansplugins.democracy.objects.Election;
 import dansplugins.democracy.objects.Voter;
 
 public class PersistentData {
-    private static PersistentData instance;
     private final ArrayList<Election> elections = new ArrayList<>();
     private final ArrayList<Candidate> candidates = new ArrayList<>();
     private final ArrayList<Voter> voters = new ArrayList<>();
-
-    private PersistentData() {
-
-    }
-
-    public static PersistentData getInstance() {
-        if (instance == null) {
-            instance = new PersistentData();
-        }
-        return instance;
-    }
 
     public Election getElection(UUID electionUUID) {
         for (Election election : elections) {

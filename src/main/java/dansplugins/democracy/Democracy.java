@@ -1,5 +1,9 @@
 package dansplugins.democracy;
 
+import dansplugins.democracy.data.PersistentData;
+import dansplugins.democracy.factories.CandidateFactory;
+import dansplugins.democracy.factories.ElectionFactory;
+import dansplugins.democracy.factories.VoterFactory;
 import dansplugins.factionsystem.MedievalFactions;
 import dansplugins.factionsystem.externalapi.MedievalFactionsAPI;
 import org.bukkit.command.Command;
@@ -13,8 +17,8 @@ import dansplugins.democracy.commands.HelpCommand;
 import dansplugins.democracy.commands.InfoCommand;
 import dansplugins.democracy.commands.RunCommand;
 import dansplugins.democracy.commands.VoteCommand;
-import dansplugins.democracy.eventhandlers.JoinHandler;
-import dansplugins.democracy.services.LocalConfigService;
+import dansplugins.democracy.listeners.JoinListener;
+import dansplugins.democracy.services.ConfigService;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 import preponderous.ponder.minecraft.bukkit.abs.PonderBukkitPlugin;
 import preponderous.ponder.minecraft.bukkit.services.CommandService;
@@ -28,34 +32,29 @@ import java.util.Arrays;
  * @author Daniel McCoy Stephenson
  */
 public final class Democracy extends PonderBukkitPlugin {
-    private static Democracy instance;
     private final String pluginVersion = "v" + getDescription().getVersion();
+    
     private final MedievalFactionsAPI medievalFactionsAPI = MedievalFactions.getInstance().getAPI();
-    private CommandService commandService;
-
-    /**
-     * This can be used to get the instance of the main class that is managed by itself.
-     * @return The managed instance of the main class.
-     */
-    public static Democracy getInstance() {
-        return instance;
-    }
+    private final CommandService commandService = new CommandService(getPonder());
+    private final ConfigService configService = new ConfigService(this);
+    private final PersistentData persistentData = new PersistentData();
+    private final ElectionFactory electionFactory = new ElectionFactory(persistentData);
+    private final CandidateFactory candidateFactory = new CandidateFactory(persistentData);
+    private final VoterFactory voterFactory = new VoterFactory(persistentData);
 
     /**
      * This runs when the server starts.
      */
     @Override
     public void onEnable() {
-        instance = this;
-
         // create/load config
         if (!(new File("./plugins/ExamplePonderPlugin/config.yml").exists())) {
-            LocalConfigService.getInstance().saveMissingConfigDefaultsIfNotPresent();
+            configService.saveMissingConfigDefaultsIfNotPresent();
         }
         else {
             // pre load compatibility checks
             if (isVersionMismatched()) {
-                LocalConfigService.getInstance().saveMissingConfigDefaultsIfNotPresent();
+                configService.saveMissingConfigDefaultsIfNotPresent();
             }
             reloadConfig();
         }
@@ -82,7 +81,7 @@ public final class Democracy extends PonderBukkitPlugin {
      */
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length == 0) {
-            DefaultCommand defaultCommand = new DefaultCommand();
+            DefaultCommand defaultCommand = new DefaultCommand(this);
             return defaultCommand.execute(sender);
         }
 
@@ -115,7 +114,7 @@ public final class Democracy extends PonderBukkitPlugin {
      * @return Whether debug is enabled.
      */
     public boolean isDebugEnabled() {
-        return LocalConfigService.getInstance().getBoolean("debugMode");
+        return configService.getBoolean("debugMode");
     }
 
     public MedievalFactionsAPI getMedievalFactionsAPI() {
@@ -128,7 +127,7 @@ public final class Democracy extends PonderBukkitPlugin {
     private void registerEventHandlers() {
         EventHandlerRegistry eventHandlerRegistry = new EventHandlerRegistry();
         ArrayList<Listener> listeners = new ArrayList<>(Arrays.asList(
-                new JoinHandler()
+                new JoinListener()
         ));
         eventHandlerRegistry.registerEventHandlers(listeners, this);
     }
@@ -139,7 +138,7 @@ public final class Democracy extends PonderBukkitPlugin {
     private void initializeCommandService() {
         ArrayList<AbstractPluginCommand> commands = new ArrayList<>(Arrays.asList(
                 new HelpCommand(),
-                new StartCommand(),
+                new StartCommand(this, electionFactory),
                 new DropOutCommand(),
                 new InfoCommand(),
                 new RunCommand(),

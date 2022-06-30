@@ -8,22 +8,15 @@ import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.objects.Election;
 
 public class ElectionFactory {
-    private static ElectionFactory instance;
+    private final PersistentData persistentData;
 
-    private ElectionFactory() {
-
-    }
-    
-    public static ElectionFactory getInstance() {
-        if (instance == null) {
-            instance = new ElectionFactory();
-        }
-        return instance;
+    public ElectionFactory(PersistentData persistentData) {
+        this.persistentData = persistentData;
     }
 
     public UUID createElection(Player player) {
         Election election = new Election(player);
-        boolean success = PersistentData.getInstance().addElection(election);
+        boolean success = persistentData.addElection(election);
         if (!success) {
             return null;
         }
