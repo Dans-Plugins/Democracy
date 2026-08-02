@@ -48,7 +48,7 @@ public final class Democracy extends PonderBukkitPlugin {
     @Override
     public void onEnable() {
         // create/load config
-        if (!(new File("./plugins/ExamplePonderPlugin/config.yml").exists())) {
+        if (!(new File("./plugins/Democracy/config.yml").exists())) {
             configService.saveMissingConfigDefaultsIfNotPresent();
         }
         else {
