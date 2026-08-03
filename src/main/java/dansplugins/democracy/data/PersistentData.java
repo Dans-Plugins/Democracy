@@ -21,6 +21,15 @@ public class PersistentData {
         return null;
     }
 
+    public Election getElectionForFaction(String factionName) {
+        for (Election election : elections) {
+            if (election.getFactionName().equalsIgnoreCase(factionName)) {
+                return election;
+            }
+        }
+        return null;
+    }
+
     public boolean addElection(Election election) {
         if (isElection(election)) {
             return false;

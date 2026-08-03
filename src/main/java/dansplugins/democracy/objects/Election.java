@@ -2,6 +2,8 @@ package dansplugins.democracy.objects;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,13 +19,15 @@ public class Election implements Savable {
     private final UUID electionUUID;
     private final LocalDateTime creationTimestamp;
     private final UUID creatorUUID;
+    private final String factionName;
     private final ArrayList<UUID> candidateUUIDs = new ArrayList<>();
     private final ArrayList<UUID> voterUUIDs = new ArrayList<>();
 
-    public Election(Player player) {
+    public Election(Player player, String factionName) {
         electionUUID = UUID.randomUUID();
         creationTimestamp = LocalDateTime.now();
         creatorUUID = player.getUniqueId();
+        this.factionName = factionName;
     }
 
     public UUID getUUID() {
@@ -36,6 +40,10 @@ public class Election implements Savable {
 
     public UUID getCreator() {
         return creatorUUID;
+    }
+
+    public String getFactionName() {
+        return factionName;
     }
 
     public boolean isCandidate(UUID playerUUID) {
@@ -61,6 +69,10 @@ public class Election implements Savable {
         }
         candidateUUIDs.remove(playerUUID);
         return true;
+    }
+
+    public List<UUID> getCandidateUUIDs() {
+        return Collections.unmodifiableList(candidateUUIDs);
     }
 
     public boolean isVoter(UUID playerUUID) {

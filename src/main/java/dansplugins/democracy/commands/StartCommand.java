@@ -1,5 +1,6 @@
 package dansplugins.democracy.commands;
 
+import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.ElectionFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -20,11 +21,13 @@ import java.util.UUID;
 public class StartCommand extends AbstractPluginCommand {
     private final Democracy democracy;
     private final ElectionFactory electionFactory;
+    private final PersistentData persistentData;
 
-    public StartCommand(Democracy democracy, ElectionFactory electionFactory) {
+    public StartCommand(Democracy democracy, ElectionFactory electionFactory, PersistentData persistentData) {
         super(new ArrayList<>(Arrays.asList("start")), new ArrayList<>(Arrays.asList("d.start")));
         this.democracy = democracy;
         this.electionFactory = electionFactory;
+        this.persistentData = persistentData;
     }
 
     @Override
@@ -41,7 +44,12 @@ public class StartCommand extends AbstractPluginCommand {
             return false;
         }
 
-        UUID electionUUID = electionFactory.createElection(player);
+        if (persistentData.getElectionForFaction(faction.getName()) != null) {
+            player.sendMessage(ChatColor.RED + "An election is already in progress.");
+            return false;
+        }
+
+        UUID electionUUID = electionFactory.createElection(player, faction.getName());
         if (electionUUID == null) {
             player.sendMessage(ChatColor.RED + "An election is already in progress.");
             return false;
