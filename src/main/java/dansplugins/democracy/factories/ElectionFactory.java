@@ -14,8 +14,8 @@ public class ElectionFactory {
         this.persistentData = persistentData;
     }
 
-    public UUID createElection(Player player) {
-        Election election = new Election(player);
+    public UUID createElection(Player player, String factionName) {
+        Election election = new Election(player, factionName);
         boolean success = persistentData.addElection(election);
         if (!success) {
             return null;

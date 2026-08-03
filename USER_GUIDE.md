@@ -17,10 +17,9 @@ Democracy is a Spigot plugin that adds democratic elections to Medieval Factions
 ## How Elections Work
 
 1. The current faction leader runs `/d start` to begin an election.
-2. Any faction member can run `/d run` to declare their candidacy.
-3. Faction members vote using `/d vote`.
-4. The candidate with the most votes becomes the new faction leader.
-5. Use `/d info` to check the current election status.
+2. Any faction member can run `/d run` to declare their candidacy, or `/d dropout` to withdraw it.
+3. Faction members vote using `/d vote <candidate>`.
+4. Use `/d info` to check the current election status and vote tallies.
 
 ## Permissions
 

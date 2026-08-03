@@ -138,11 +138,11 @@ public final class Democracy extends PonderBukkitPlugin {
     private void initializeCommandService() {
         ArrayList<AbstractPluginCommand> commands = new ArrayList<>(Arrays.asList(
                 new HelpCommand(),
-                new StartCommand(this, electionFactory),
-                new DropOutCommand(),
-                new InfoCommand(),
-                new RunCommand(),
-                new VoteCommand()
+                new StartCommand(this, electionFactory, persistentData),
+                new DropOutCommand(this, persistentData),
+                new InfoCommand(this, persistentData),
+                new RunCommand(this, persistentData, candidateFactory),
+                new VoteCommand(this, persistentData, voterFactory)
         ));
         commandService.initialize(commands, "That command wasn't found.");
     }

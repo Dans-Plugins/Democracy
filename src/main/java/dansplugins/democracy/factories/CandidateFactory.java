@@ -21,6 +21,7 @@ public class CandidateFactory {
         if (!success) {
             return null;
         }
+        election.addCandidate(candidate.getPlayerUUID());
         return candidate.getPlayerUUID();
     }
 }
