@@ -46,9 +46,9 @@ public class PersistentData {
         return true;
     }
 
-    public Candidate getCandidate(UUID playerUUID) {
+    public Candidate getCandidate(UUID electionUUID, UUID playerUUID) {
         for (Candidate candidate : candidates) {
-            if (candidate.getPlayerUUID().equals(playerUUID)) {
+            if (candidate.getElectionUUID().equals(electionUUID) && candidate.getPlayerUUID().equals(playerUUID)) {
                 return candidate;
             }
         }
@@ -71,9 +71,9 @@ public class PersistentData {
         return true;
     }
 
-    public Voter getVoter(UUID playerUUID) {
+    public Voter getVoter(UUID electionUUID, UUID playerUUID) {
         for (Voter voter : voters) {
-            if (voter.getPlayerUUID().equals(playerUUID)) {
+            if (voter.getElectionUUID().equals(electionUUID) && voter.getPlayerUUID().equals(playerUUID)) {
                 return voter;
             }
         }
@@ -101,11 +101,11 @@ public class PersistentData {
     }
 
     private boolean isCandidate(Candidate candidate) {
-        return getCandidate(candidate.getPlayerUUID()) != null;
+        return getCandidate(candidate.getElectionUUID(), candidate.getPlayerUUID()) != null;
     }
 
     private boolean isVoter(Voter voter) {
-        return getVoter(voter.getPlayerUUID()) != null;
+        return getVoter(voter.getElectionUUID(), voter.getPlayerUUID()) != null;
     }
 
 }

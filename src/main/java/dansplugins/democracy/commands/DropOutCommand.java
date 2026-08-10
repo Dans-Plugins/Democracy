@@ -47,7 +47,7 @@ public class DropOutCommand extends AbstractPluginCommand {
             return false;
         }
 
-        Candidate candidate = persistentData.getCandidate(player.getUniqueId());
+        Candidate candidate = persistentData.getCandidate(election.getUUID(), player.getUniqueId());
         persistentData.removeCandidate(candidate);
         election.removeCandidate(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You have dropped out of the election.");

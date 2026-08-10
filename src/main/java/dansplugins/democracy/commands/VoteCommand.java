@@ -73,7 +73,7 @@ public class VoteCommand extends AbstractPluginCommand {
         }
 
         voterFactory.createVoter(player, election);
-        Candidate candidate = persistentData.getCandidate(target.getUniqueId());
+        Candidate candidate = persistentData.getCandidate(election.getUUID(), target.getUniqueId());
         candidate.addVoter(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "Your vote for " + target.getName() + " has been cast.");
         return true;
