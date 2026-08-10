@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+- A player who took part in an earlier election is now recorded correctly in a later one. Candidate and voter records are matched by election as well as by player, so a player who has already voted somewhere else can still run and vote in their current faction's election — and is once again limited to a single vote in it
+
+### Removed
+- The placeholder message sent to every player on join ("This message was sent by ExamplePonderPlugin.") has been removed, along with the empty listener that sent it
+
 ## [0.2.0-SNAPSHOT-8-8-2026] – 2026-08-08
 
 ### Changed

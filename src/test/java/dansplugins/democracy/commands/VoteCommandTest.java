@@ -28,9 +28,11 @@ class VoteCommandTest {
     private VoteCommand voteCommand;
     private PersistentData persistentData;
     private CandidateFactory candidateFactory;
+    private VoterFactory voterFactory;
     private Player voter;
     private Player candidatePlayer;
     private UUID candidateUUID;
+    private UUID otherCandidateUUID;
     private Election election;
     private MockedStatic<Bukkit> bukkit;
 
@@ -45,8 +47,14 @@ class VoteCommandTest {
         when(candidatePlayer.getUniqueId()).thenReturn(candidateUUID);
         when(candidatePlayer.getName()).thenReturn("CandidateName");
 
+        otherCandidateUUID = UUID.randomUUID();
+        Player otherCandidatePlayer = mock(Player.class);
+        when(otherCandidatePlayer.getUniqueId()).thenReturn(otherCandidateUUID);
+        when(otherCandidatePlayer.getName()).thenReturn("OtherCandidateName");
+
         bukkit = mockStatic(Bukkit.class);
         bukkit.when(() -> Bukkit.getPlayer("CandidateName")).thenReturn(candidatePlayer);
+        bukkit.when(() -> Bukkit.getPlayer("OtherCandidateName")).thenReturn(otherCandidatePlayer);
         bukkit.when(() -> Bukkit.getPlayer("NoSuchPlayer")).thenReturn(null);
 
         MF_Faction faction = mock(MF_Faction.class);
@@ -60,12 +68,13 @@ class VoteCommandTest {
 
         persistentData = new PersistentData();
         candidateFactory = new CandidateFactory(persistentData);
-        VoterFactory voterFactory = new VoterFactory(persistentData);
+        voterFactory = new VoterFactory(persistentData);
         voteCommand = new VoteCommand(democracy, persistentData, voterFactory);
 
         election = new Election(voter, "TestFaction");
         persistentData.addElection(election);
         candidateFactory.createCandidate(candidatePlayer, election);
+        candidateFactory.createCandidate(otherCandidatePlayer, election);
     }
 
     @AfterEach
@@ -87,7 +96,7 @@ class VoteCommandTest {
     void succeedsAndRecordsVoteForCandidate() {
         assertTrue(voteCommand.execute(voter, new String[] { "CandidateName" }));
 
-        Candidate candidate = persistentData.getCandidate(candidateUUID);
+        Candidate candidate = persistentData.getCandidate(election.getUUID(), candidateUUID);
         assertEquals(1, candidate.getNumVoter());
     }
 
@@ -96,5 +105,17 @@ class VoteCommandTest {
         voteCommand.execute(voter, new String[] { "CandidateName" });
 
         assertFalse(voteCommand.execute(voter, new String[] { "CandidateName" }));
+    }
+
+    @Test
+    void aPlayerWhoVotedInAnEarlierElectionStillGetsOneVoteInTheCurrentOne() {
+        Election earlierElection = new Election(voter, "EarlierFaction");
+        persistentData.addElection(earlierElection);
+        voterFactory.createVoter(voter, earlierElection);
+
+        assertTrue(voteCommand.execute(voter, new String[] { "CandidateName" }));
+        assertFalse(voteCommand.execute(voter, new String[] { "OtherCandidateName" }));
+        assertEquals(1, persistentData.getCandidate(election.getUUID(), candidateUUID).getNumVoter());
+        assertEquals(0, persistentData.getCandidate(election.getUUID(), otherCandidateUUID).getNumVoter());
     }
 }

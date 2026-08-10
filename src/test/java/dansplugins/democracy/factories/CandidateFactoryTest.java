@@ -34,7 +34,7 @@ class CandidateFactoryTest {
         UUID result = candidateFactory.createCandidate(player, election);
 
         assertEquals(playerUUID, result);
-        assertNotNull(persistentData.getCandidate(playerUUID));
+        assertNotNull(persistentData.getCandidate(election.getUUID(), playerUUID));
         assertTrue(election.isCandidate(playerUUID));
     }
 
@@ -44,5 +44,14 @@ class CandidateFactoryTest {
         UUID result = candidateFactory.createCandidate(player, election);
 
         assertNull(result);
+    }
+
+    @Test
+    void createCandidateSucceedsForTheSamePlayerInAnotherElection() {
+        candidateFactory.createCandidate(player, election);
+        Election otherElection = new Election(player, "OtherFaction");
+
+        assertEquals(playerUUID, candidateFactory.createCandidate(player, otherElection));
+        assertTrue(otherElection.isCandidate(playerUUID));
     }
 }

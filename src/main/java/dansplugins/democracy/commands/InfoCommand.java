@@ -53,7 +53,7 @@ public class InfoCommand extends AbstractPluginCommand {
         player.sendMessage(ChatColor.AQUA + "=== Election Info ===");
         player.sendMessage(ChatColor.AQUA + "Started by: " + getPlayerName(election.getCreator()));
         for (UUID candidateUUID : election.getCandidateUUIDs()) {
-            Candidate candidate = persistentData.getCandidate(candidateUUID);
+            Candidate candidate = persistentData.getCandidate(election.getUUID(), candidateUUID);
             int votes = candidate == null ? 0 : candidate.getNumVoter();
             player.sendMessage(ChatColor.AQUA + getPlayerName(candidateUUID) + ": " + votes + " vote(s)");
         }
