@@ -8,7 +8,6 @@ import dansplugins.factionsystem.MedievalFactions;
 import dansplugins.factionsystem.externalapi.MedievalFactionsAPI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.Listener;
 
 import dansplugins.democracy.commands.StartCommand;
 import dansplugins.democracy.commands.DefaultCommand;
@@ -17,12 +16,10 @@ import dansplugins.democracy.commands.HelpCommand;
 import dansplugins.democracy.commands.InfoCommand;
 import dansplugins.democracy.commands.RunCommand;
 import dansplugins.democracy.commands.VoteCommand;
-import dansplugins.democracy.listeners.JoinListener;
 import dansplugins.democracy.services.ConfigService;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 import preponderous.ponder.minecraft.bukkit.abs.PonderBukkitPlugin;
 import preponderous.ponder.minecraft.bukkit.services.CommandService;
-import preponderous.ponder.minecraft.bukkit.tools.EventHandlerRegistry;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -59,7 +56,6 @@ public final class Democracy extends PonderBukkitPlugin {
             reloadConfig();
         }
 
-        registerEventHandlers();
         initializeCommandService();
     }
 
@@ -119,17 +115,6 @@ public final class Democracy extends PonderBukkitPlugin {
 
     public MedievalFactionsAPI getMedievalFactionsAPI() {
         return medievalFactionsAPI;
-    }
-
-    /**
-     * Registers the event handlers of the plugin using Ponder.
-     */
-    private void registerEventHandlers() {
-        EventHandlerRegistry eventHandlerRegistry = new EventHandlerRegistry();
-        ArrayList<Listener> listeners = new ArrayList<>(Arrays.asList(
-                new JoinListener()
-        ));
-        eventHandlerRegistry.registerEventHandlers(listeners, this);
     }
 
     /**
