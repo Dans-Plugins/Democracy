@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- A `Dev Release` workflow, which republishes a rolling `dev` prerelease of `main` on every non-documentation push. This is what Dan's Plugin Manager's experimental channel installs from: `/dpm get democracy --experimental` reads `releases/tags/dev`, so without it there is nothing for that command to download. The prerelease is unreleased, unreviewed code and is marked as such.
+
 ### Fixed
 - A player who took part in an earlier election is now recorded correctly in a later one. Candidate and voter records are matched by election as well as by player, so a player who has already voted somewhere else can still run and vote in their current faction's election — and is once again limited to a single vote in it
 
