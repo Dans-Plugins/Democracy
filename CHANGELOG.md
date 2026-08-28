@@ -15,9 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - A `Dev Release` workflow, which republishes a rolling `dev` prerelease of `main` on every non-documentation push. This is what Dan's Plugin Manager's experimental channel installs from: `/dpm get democracy --experimental` reads `releases/tags/dev`, so without it there is nothing for that command to download. The prerelease is unreleased, unreviewed code and is marked as such.
 
 ### Fixed
+- `/d start` now confirms a successfully started election in green. The confirmation was previously sent in the red every failure message uses, so a faction owner could not tell success from failure by colour
+- Debug output is now prefixed with `[Democracy]` instead of `[ExamplePonderPlugin]`, and the `debugMode` config option finally has a consumer — enabling it logs the plugin being enabled and disabled
 - A player who took part in an earlier election is now recorded correctly in a later one. Candidate and voter records are matched by election as well as by player, so a player who has already voted somewhere else can still run and vote in their current faction's election — and is once again limited to a single vote in it
 
 ### Removed
+- The `A` and `C` placeholder config options carried over from the Ponder example plugin have been dropped from `ConfigService`. Neither was ever written to `config.yml`, and the `A` branch would have coerced its value to an integer
 - The placeholder message sent to every player on join ("This message was sent by ExamplePonderPlugin.") has been removed, along with the empty listener that sent it
 
 ## [0.2.0-SNAPSHOT-8-8-2026] – 2026-08-08
