@@ -14,7 +14,7 @@ public class Logger {
 
     public void log(String message) {
         if (democracy.isDebugEnabled()) {
-            System.out.println("[ExamplePonderPlugin] " + message);
+            System.out.println("[Democracy] " + message);
         }
     }
 
