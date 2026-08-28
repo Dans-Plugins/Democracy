@@ -5,6 +5,7 @@ import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.ElectionFactory;
 import dansplugins.factionsystem.externalapi.MF_Faction;
 import dansplugins.factionsystem.externalapi.MedievalFactionsAPI;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class StartCommandTest {
@@ -46,6 +48,13 @@ class StartCommandTest {
     void firstElectionInFactionSucceeds() {
         assertTrue(startCommand.execute(player));
         assertTrue(persistentData.getElectionForFaction("TestFaction") != null);
+    }
+
+    @Test
+    void successMessageIsGreenRatherThanTheColourUsedForErrors() {
+        startCommand.execute(player);
+
+        verify(player).sendMessage(ChatColor.GREEN + "Election has been started.");
     }
 
     @Test

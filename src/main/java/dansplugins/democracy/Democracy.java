@@ -17,6 +17,7 @@ import dansplugins.democracy.commands.InfoCommand;
 import dansplugins.democracy.commands.RunCommand;
 import dansplugins.democracy.commands.VoteCommand;
 import dansplugins.democracy.services.ConfigService;
+import dansplugins.democracy.utils.Logger;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 import preponderous.ponder.minecraft.bukkit.abs.PonderBukkitPlugin;
 import preponderous.ponder.minecraft.bukkit.services.CommandService;
@@ -38,6 +39,7 @@ public final class Democracy extends PonderBukkitPlugin {
     private final ElectionFactory electionFactory = new ElectionFactory(persistentData);
     private final CandidateFactory candidateFactory = new CandidateFactory(persistentData);
     private final VoterFactory voterFactory = new VoterFactory(persistentData);
+    private final Logger logger = new Logger(this);
 
     /**
      * This runs when the server starts.
@@ -57,6 +59,7 @@ public final class Democracy extends PonderBukkitPlugin {
         }
 
         initializeCommandService();
+        logger.log("Democracy " + getVersion() + " has been enabled.");
     }
 
     /**
@@ -64,7 +67,7 @@ public final class Democracy extends PonderBukkitPlugin {
      */
     @Override
     public void onDisable() {
-
+        logger.log("Democracy " + getVersion() + " has been disabled.");
     }
 
     /**

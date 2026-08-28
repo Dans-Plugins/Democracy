@@ -54,7 +54,7 @@ public class StartCommand extends AbstractPluginCommand {
             player.sendMessage(ChatColor.RED + "An election is already in progress.");
             return false;
         }
-        player.sendMessage(ChatColor.RED + "Election has been started.");
+        player.sendMessage(ChatColor.GREEN + "Election has been started.");
         return true;
     }
 
