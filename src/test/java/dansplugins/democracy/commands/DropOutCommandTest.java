@@ -54,6 +54,14 @@ class DropOutCommandTest {
     }
 
     @Test
+    void failsWhenTheCandidateRecordIsMissingFromPersistentData() {
+        election.addCandidate(playerUUID);
+
+        assertFalse(dropOutCommand.execute(player));
+        assertTrue(election.isCandidate(playerUUID));
+    }
+
+    @Test
     void succeedsAndRemovesCandidate() {
         candidateFactory.createCandidate(player, election);
 

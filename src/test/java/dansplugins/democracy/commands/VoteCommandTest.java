@@ -6,6 +6,7 @@ import dansplugins.democracy.factories.CandidateFactory;
 import dansplugins.democracy.factories.VoterFactory;
 import dansplugins.democracy.objects.Candidate;
 import dansplugins.democracy.objects.Election;
+import dansplugins.democracy.objects.Voter;
 import dansplugins.factionsystem.externalapi.MF_Faction;
 import dansplugins.factionsystem.externalapi.MedievalFactionsAPI;
 import org.bukkit.Bukkit;
@@ -105,6 +106,25 @@ class VoteCommandTest {
         voteCommand.execute(voter, new String[] { "CandidateName" });
 
         assertFalse(voteCommand.execute(voter, new String[] { "CandidateName" }));
+    }
+
+    @Test
+    void failsWhenTheCandidateRecordIsMissingFromPersistentData() {
+        Election electionWithoutRecords = new Election(voter, "TestFaction");
+        electionWithoutRecords.addCandidate(candidateUUID);
+        persistentData.removeElection(election);
+        persistentData.addElection(electionWithoutRecords);
+
+        assertFalse(voteCommand.execute(voter, new String[] { "CandidateName" }));
+        assertFalse(electionWithoutRecords.isVoter(voter.getUniqueId()));
+    }
+
+    @Test
+    void failsWhenTheVoterRecordCannotBeCreated() {
+        persistentData.addVoter(new Voter(voter, election));
+
+        assertFalse(voteCommand.execute(voter, new String[] { "CandidateName" }));
+        assertEquals(0, persistentData.getCandidate(election.getUUID(), candidateUUID).getNumVoter());
     }
 
     @Test

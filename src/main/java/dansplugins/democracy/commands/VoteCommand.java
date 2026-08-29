@@ -72,8 +72,17 @@ public class VoteCommand extends AbstractPluginCommand {
             return false;
         }
 
-        voterFactory.createVoter(player, election);
         Candidate candidate = persistentData.getCandidate(election.getUUID(), target.getUniqueId());
+        if (candidate == null) {
+            player.sendMessage(ChatColor.RED + "That candidate's record could not be found. Your vote was not cast.");
+            return false;
+        }
+
+        if (voterFactory.createVoter(player, election) == null) {
+            player.sendMessage(ChatColor.RED + "Your vote could not be recorded. Your vote was not cast.");
+            return false;
+        }
+
         candidate.addVoter(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "Your vote for " + target.getName() + " has been cast.");
         return true;
