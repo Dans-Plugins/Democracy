@@ -16,6 +16,11 @@ import org.bukkit.configuration.file.FileConfiguration;
  * @author Daniel McCoy Stephenson
  */
 public class ConfigService {
+    private static final String USAGE_REPORTING_ENABLED_KEY = "usage-reporting.enabled";
+    private static final String USAGE_REPORTING_ENDPOINT_KEY = "usage-reporting.endpoint";
+    private static final String USAGE_REPORTING_KEY_KEY = "usage-reporting.key";
+    private static final String DEFAULT_USAGE_REPORTING_ENDPOINT = "https://trace.danielstephenson.dev";
+
     private final Democracy democracy;
 
     private boolean altered = false;
@@ -116,5 +121,27 @@ public class ConfigService {
             return defaultValue;
         }
         return toReturn;
+    }
+
+    // The one-argument getters, deliberately. saveDefaultConfig() never touches a
+    // config.yml that already exists, so a server upgraded from a version before
+    // usage reporting has no usage-reporting block on disk. Bukkit registers the
+    // jar's config.yml as the defaults for that file, and the one-argument
+    // getters fall through to them -- but the two-argument getters return their
+    // explicit fallback instead, which for the key would be "" and would turn
+    // reporting off on every existing installation. Verified against
+    // YamlConfiguration, not assumed.
+
+    public boolean isUsageReportingEnabled() {
+        return getBoolean(USAGE_REPORTING_ENABLED_KEY);
+    }
+
+    public String getUsageReportingEndpoint() {
+        return getStringOrDefault(USAGE_REPORTING_ENDPOINT_KEY, DEFAULT_USAGE_REPORTING_ENDPOINT);
+    }
+
+    /** Empty when no key is configured or bundled, which the client treats as "off". */
+    public String getUsageReportingKey() {
+        return getStringOrDefault(USAGE_REPORTING_KEY_KEY, "");
     }
 }

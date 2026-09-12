@@ -17,6 +17,7 @@ import dansplugins.democracy.commands.InfoCommand;
 import dansplugins.democracy.commands.RunCommand;
 import dansplugins.democracy.commands.VoteCommand;
 import dansplugins.democracy.services.ConfigService;
+import dansplugins.democracy.trace.TraceClient;
 import dansplugins.democracy.utils.Logger;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 import preponderous.ponder.minecraft.bukkit.abs.PonderBukkitPlugin;
@@ -25,6 +26,7 @@ import preponderous.ponder.minecraft.bukkit.services.CommandService;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Daniel McCoy Stephenson
@@ -41,6 +43,10 @@ public final class Democracy extends PonderBukkitPlugin {
     private final VoterFactory voterFactory = new VoterFactory(persistentData);
     private final Logger logger = new Logger(this);
 
+    // A no-op until the config has been read, so a command arriving before
+    // onEnable() finishes has something safe to report to.
+    private TraceClient trace = TraceClient.disabled();
+
     /**
      * This runs when the server starts.
      */
@@ -48,6 +54,9 @@ public final class Democracy extends PonderBukkitPlugin {
     public void onEnable() {
         // create/load config
         if (!(new File("./plugins/Democracy/config.yml").exists())) {
+            // write the bundled config.yml (with its comments) before the
+            // programmatic defaults are added to it
+            saveDefaultConfig();
             configService.saveMissingConfigDefaultsIfNotPresent();
         }
         else {
@@ -59,6 +68,15 @@ public final class Democracy extends PonderBukkitPlugin {
         }
 
         initializeCommandService();
+
+        // usage reporting: one event now, one per command; see config.yml
+        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName())
+                .key(configService.getUsageReportingKey())
+                .enabled(configService.isUsageReportingEnabled())
+                .logger(getLogger())
+                .build();
+        trace.report("startup", null, Collections.singletonMap("version", getDescription().getVersion()));
+
         logger.log("Democracy " + getVersion() + " has been enabled.");
     }
 
@@ -67,18 +85,20 @@ public final class Democracy extends PonderBukkitPlugin {
      */
     @Override
     public void onDisable() {
+        trace.close();
         logger.log("Democracy " + getVersion() + " has been disabled.");
     }
 
     /**
      * This method handles commands sent to the minecraft server and interprets them if the label matches one of the core commands.
      * @param sender The sender of the command.
-     * @param cmd The command that was sent. This is unused.
+     * @param cmd The command that was sent. Only its name is used, for usage reporting.
      * @param label The core command that has been invoked.
      * @param args Arguments of the core command. Often sub-commands.
      * @return A boolean indicating whether the execution of the command was successful.
      */
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        trace.report("command", null, Collections.singletonMap("name", cmd.getName()));
         if (args.length == 0) {
             DefaultCommand defaultCommand = new DefaultCommand(this);
             return defaultCommand.execute(sender);
