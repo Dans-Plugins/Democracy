@@ -69,8 +69,14 @@ public final class Democracy extends PonderBukkitPlugin {
             reloadConfig();
         }
 
-        // restore any election that was in progress when the server last stopped
-        storageService.load();
+        // restore any election that was in progress when the server last stopped. Without it
+        // the commands would confirm votes that could never be saved (save() is refused after
+        // a failed load), so the plugin stops here rather than run on state it cannot keep.
+        if (!storageService.load()) {
+            getLogger().severe("Democracy is being disabled because its election data could not be loaded.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         initializeCommandService();
 

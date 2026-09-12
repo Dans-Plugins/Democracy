@@ -6,7 +6,10 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +43,11 @@ public class StorageService {
     private final PersistentData persistentData;
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    // Set when load() could not read what is on disk. save() then refuses to run, because
-    // writing the (empty) in-memory state over the files would destroy the very data that
-    // failed to load, with no way back for the server owner.
-    private boolean loadFailed = false;
+    // Cleared only by a successful load(). Until then save() refuses to run, because writing
+    // the (empty) in-memory state over the files would destroy the very data that was never
+    // read -- whether because load() failed or because onEnable() never got as far as calling
+    // it. Bukkit still runs onDisable() for a plugin whose onEnable() threw.
+    private boolean loadFailed = true;
 
     public StorageService(Democracy democracy, PersistentData persistentData) {
         this.democracy = democracy;
@@ -107,7 +111,7 @@ public class StorageService {
      */
     public boolean save() {
         if (loadFailed) {
-            democracy.getLogger().severe("Election data was not saved because it could not be loaded when "
+            democracy.getLogger().severe("Election data was not saved because it was not loaded when "
                     + "the plugin was enabled. The files on disk have been left as they were.");
             return false;
         }
@@ -137,9 +141,19 @@ public class StorageService {
         }
     }
 
+    // Written to a sibling temp file and moved into place, so a JVM killed or a disk filled
+    // mid-write leaves the previous file intact instead of a truncated one that the next
+    // load() would refuse -- which would lock every save() out until the file was repaired.
     private void writeRecords(File file, List<Map<String, String>> records) throws IOException {
-        try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
+        Path target = file.toPath();
+        Path temp = target.resolveSibling(file.getName() + ".tmp");
+        try (Writer writer = Files.newBufferedWriter(temp, StandardCharsets.UTF_8)) {
             gson.toJson(records, writer);
+        }
+        try {
+            Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException e) {
+            Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 

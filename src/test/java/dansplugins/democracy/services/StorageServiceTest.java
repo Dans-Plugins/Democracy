@@ -59,7 +59,17 @@ class StorageServiceTest {
     }
 
     @Test
+    void saveIsRefusedUntilALoadHasSucceeded() {
+        // Bukkit runs onDisable() even when onEnable() threw before load() was reached, and a
+        // save at that point would write empty lists over whatever is on disk.
+        assertFalse(storageService.save());
+
+        assertFalse(dataFolder.exists());
+    }
+
+    @Test
     void saveCreatesTheDataFolderAndOneFilePerRecordType() {
+        assertTrue(storageService.load());
         assertFalse(dataFolder.exists());
 
         assertTrue(storageService.save());
@@ -70,7 +80,23 @@ class StorageServiceTest {
     }
 
     @Test
+    void saveLeavesNoTemporaryFilesBehind() {
+        assertTrue(storageService.load());
+
+        assertTrue(storageService.save());
+        assertTrue(storageService.save());
+
+        String[] names = dataFolder.list();
+        assertNotNull(names);
+        assertEquals(3, names.length, String.join(", ", names));
+        for (String name : names) {
+            assertTrue(name.endsWith(".json"), name);
+        }
+    }
+
+    @Test
     void saveThenLoadRestoresAnElectionWithItsCandidatesAndVotes() {
+        assertTrue(storageService.load());
         Election election = new Election(owner, "TestFaction");
         Candidate candidate = new Candidate(owner, election);
         Voter voter = new Voter(voterPlayer, election);
@@ -106,6 +132,7 @@ class StorageServiceTest {
 
     @Test
     void saveWritesTheRecordsAsJsonArraysOfStringMaps() throws IOException {
+        assertTrue(storageService.load());
         Election election = new Election(owner, "TestFaction");
         persistentData.addElection(election);
         storageService.save();
@@ -128,6 +155,7 @@ class StorageServiceTest {
 
     @Test
     void loadAddsNothingWhenOnlyTheLastFileIsCorrupt() throws IOException {
+        assertTrue(storageService.load());
         Election election = new Election(owner, "TestFaction");
         persistentData.addElection(election);
         storageService.save();
