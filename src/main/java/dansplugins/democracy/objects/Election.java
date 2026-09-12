@@ -3,6 +3,7 @@ package dansplugins.democracy.objects;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -16,10 +17,10 @@ import preponderous.ponder.misc.abs.Savable;
  * @since Februrary 20th, 2022
  */
 public class Election implements Savable {
-    private final UUID electionUUID;
-    private final LocalDateTime creationTimestamp;
-    private final UUID creatorUUID;
-    private final String factionName;
+    private UUID electionUUID;
+    private LocalDateTime creationTimestamp;
+    private UUID creatorUUID;
+    private String factionName;
     private final ArrayList<UUID> candidateUUIDs = new ArrayList<>();
     private final ArrayList<UUID> voterUUIDs = new ArrayList<>();
 
@@ -28,6 +29,13 @@ public class Election implements Savable {
         creationTimestamp = LocalDateTime.now();
         creatorUUID = player.getUniqueId();
         this.factionName = factionName;
+    }
+
+    /**
+     * Rebuilds an election from the map produced by {@link #save()}.
+     */
+    public Election(Map<String, String> data) {
+        load(data);
     }
 
     public UUID getUUID() {
@@ -102,12 +110,30 @@ public class Election implements Savable {
 
     @Override
     public Map<String, String> save() {
-        // TODO: implement
-        return null;
+        Map<String, String> data = new HashMap<>();
+        data.put("electionUUID", electionUUID.toString());
+        data.put("creationTimestamp", creationTimestamp.toString());
+        data.put("creatorUUID", creatorUUID.toString());
+        data.put("factionName", factionName);
+        data.put("candidateUUIDs", SavableFields.uuidListToJson(candidateUUIDs));
+        data.put("voterUUIDs", SavableFields.uuidListToJson(voterUUIDs));
+        return data;
     }
 
+    /**
+     * Replaces this election's state with the given data. Every key written by
+     * {@link #save()} is required; a record missing one is rejected with an
+     * {@link IllegalArgumentException}.
+     */
     @Override
     public void load(Map<String, String> data) {
-        // TODO: implement
+        electionUUID = UUID.fromString(SavableFields.require(data, "electionUUID"));
+        creationTimestamp = LocalDateTime.parse(SavableFields.require(data, "creationTimestamp"));
+        creatorUUID = UUID.fromString(SavableFields.require(data, "creatorUUID"));
+        factionName = SavableFields.require(data, "factionName");
+        candidateUUIDs.clear();
+        candidateUUIDs.addAll(SavableFields.uuidListFromJson(SavableFields.require(data, "candidateUUIDs")));
+        voterUUIDs.clear();
+        voterUUIDs.addAll(SavableFields.uuidListFromJson(SavableFields.require(data, "voterUUIDs")));
     }
 }

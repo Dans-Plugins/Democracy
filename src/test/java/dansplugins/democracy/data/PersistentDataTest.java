@@ -98,6 +98,27 @@ class PersistentDataTest {
     }
 
     @Test
+    void listsExposeEverythingAddedAndAreUnmodifiable() {
+        Election election = new Election(player, "TestFaction");
+        Candidate candidate = new Candidate(player, election);
+        Voter voter = new Voter(player, election);
+        persistentData.addElection(election);
+        persistentData.addCandidate(candidate);
+        persistentData.addVoter(voter);
+
+        assertEquals(1, persistentData.getElections().size());
+        assertSame(election, persistentData.getElections().get(0));
+        assertEquals(1, persistentData.getCandidates().size());
+        assertSame(candidate, persistentData.getCandidates().get(0));
+        assertEquals(1, persistentData.getVoters().size());
+        assertSame(voter, persistentData.getVoters().get(0));
+
+        assertThrows(UnsupportedOperationException.class, () -> persistentData.getElections().clear());
+        assertThrows(UnsupportedOperationException.class, () -> persistentData.getCandidates().clear());
+        assertThrows(UnsupportedOperationException.class, () -> persistentData.getVoters().clear());
+    }
+
+    @Test
     void samePlayerCanBeAVoterInTwoElections() {
         Election firstElection = new Election(player, "FirstFaction");
         Election secondElection = new Election(player, "SecondFaction");

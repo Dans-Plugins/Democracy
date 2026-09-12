@@ -1,6 +1,8 @@
 package dansplugins.democracy.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import dansplugins.democracy.objects.Candidate;
@@ -94,6 +96,18 @@ public class PersistentData {
         }
         voters.remove(voter);
         return true;
+    }
+
+    public List<Election> getElections() {
+        return Collections.unmodifiableList(elections);
+    }
+
+    public List<Candidate> getCandidates() {
+        return Collections.unmodifiableList(candidates);
+    }
+
+    public List<Voter> getVoters() {
+        return Collections.unmodifiableList(voters);
     }
 
     private boolean isElection(Election election) {

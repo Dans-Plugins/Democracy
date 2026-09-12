@@ -21,6 +21,8 @@ Democracy is a Spigot plugin that adds democratic elections to Medieval Factions
 3. Faction members vote using `/d vote <candidate>`.
 4. Use `/d info` to check the current election status and vote tallies.
 
+An election in progress survives a server restart: elections, candidates and votes are saved to `elections.json`, `candidates.json` and `voters.json` in `plugins/Democracy/` when the server stops and loaded again when it starts. If one of those files cannot be read, the plugin reports it in the console, loads nothing from it and leaves it untouched so it can be repaired.
+
 ## Permissions
 
 | Permission | Default | Description |

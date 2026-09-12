@@ -17,6 +17,7 @@ import dansplugins.democracy.commands.InfoCommand;
 import dansplugins.democracy.commands.RunCommand;
 import dansplugins.democracy.commands.VoteCommand;
 import dansplugins.democracy.services.ConfigService;
+import dansplugins.democracy.services.StorageService;
 import dansplugins.democracy.trace.TraceClient;
 import dansplugins.democracy.utils.Logger;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
@@ -38,6 +39,7 @@ public final class Democracy extends PonderBukkitPlugin {
     private final CommandService commandService = new CommandService(getPonder());
     private final ConfigService configService = new ConfigService(this);
     private final PersistentData persistentData = new PersistentData();
+    private final StorageService storageService = new StorageService(this, persistentData);
     private final ElectionFactory electionFactory = new ElectionFactory(persistentData);
     private final CandidateFactory candidateFactory = new CandidateFactory(persistentData);
     private final VoterFactory voterFactory = new VoterFactory(persistentData);
@@ -67,6 +69,9 @@ public final class Democracy extends PonderBukkitPlugin {
             reloadConfig();
         }
 
+        // restore any election that was in progress when the server last stopped
+        storageService.load();
+
         initializeCommandService();
 
         // usage reporting: one event now, one per command; see config.yml
@@ -85,6 +90,7 @@ public final class Democracy extends PonderBukkitPlugin {
      */
     @Override
     public void onDisable() {
+        storageService.save();
         trace.close();
         logger.log("Democracy " + getVersion() + " has been disabled.");
     }
