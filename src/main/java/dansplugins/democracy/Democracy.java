@@ -34,8 +34,10 @@ import java.util.Collections;
  */
 public final class Democracy extends PonderBukkitPlugin {
     private final String pluginVersion = "v" + getDescription().getVersion();
-    
-    private final MedievalFactionsAPI medievalFactionsAPI = MedievalFactions.getInstance().getAPI();
+
+    // Looked up in onEnable() rather than here: this class is constructed when the jar is
+    // loaded, before any plugin (Medieval Factions included) has been enabled.
+    private MedievalFactionsAPI medievalFactionsAPI;
     private final CommandService commandService = new CommandService(getPonder());
     private final ConfigService configService = new ConfigService(this);
     private final PersistentData persistentData = new PersistentData();
@@ -54,6 +56,14 @@ public final class Democracy extends PonderBukkitPlugin {
      */
     @Override
     public void onEnable() {
+        // depend: [MedievalFactions] means it has been enabled by now, so its API is available
+        medievalFactionsAPI = lookUpMedievalFactionsAPI();
+        if (medievalFactionsAPI == null) {
+            getLogger().severe("Democracy is being disabled because Medieval Factions is not enabled.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         // create/load config
         if (!(new File("./plugins/Democracy/config.yml").exists())) {
             // write the bundled config.yml (with its comments) before the
@@ -167,6 +177,15 @@ public final class Democracy extends PonderBukkitPlugin {
 
     public MedievalFactionsAPI getMedievalFactionsAPI() {
         return medievalFactionsAPI;
+    }
+
+    /**
+     * Looks up the Medieval Factions API.
+     * @return The API, or null if Medieval Factions has not been enabled.
+     */
+    static MedievalFactionsAPI lookUpMedievalFactionsAPI() {
+        MedievalFactions medievalFactions = MedievalFactions.getInstance();
+        return medievalFactions == null ? null : medievalFactions.getAPI();
     }
 
     /**
