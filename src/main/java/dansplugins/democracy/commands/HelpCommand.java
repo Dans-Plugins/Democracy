@@ -20,7 +20,7 @@ public class HelpCommand extends AbstractPluginCommand {
     public boolean execute(CommandSender commandSender) {
         commandSender.sendMessage(ChatColor.AQUA + "/d help");
         commandSender.sendMessage(ChatColor.AQUA + "/d info");
-        commandSender.sendMessage(ChatColor.AQUA + "/d vote");
+        commandSender.sendMessage(ChatColor.AQUA + "/d vote <candidate>");
         commandSender.sendMessage(ChatColor.AQUA + "/d run");
         commandSender.sendMessage(ChatColor.AQUA + "/d dropout");
         commandSender.sendMessage(ChatColor.AQUA + "/d start");
