@@ -3,8 +3,7 @@ package dansplugins.democracy.commands;
 import dansplugins.democracy.Democracy;
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.ElectionFactory;
-import dansplugins.factionsystem.externalapi.MF_Faction;
-import dansplugins.factionsystem.externalapi.MedievalFactionsAPI;
+import dansplugins.democracy.integrators.FactionLookup;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +21,7 @@ class StartCommandTest {
     private StartCommand startCommand;
     private PersistentData persistentData;
     private Player player;
+    private FactionLookup factionLookup;
 
     @BeforeEach
     void setUp() {
@@ -29,15 +29,12 @@ class StartCommandTest {
         player = mock(Player.class);
         when(player.getUniqueId()).thenReturn(playerUUID);
 
-        MF_Faction faction = mock(MF_Faction.class);
-        when(faction.getName()).thenReturn("TestFaction");
-        when(faction.getOwner()).thenReturn(playerUUID);
-
-        MedievalFactionsAPI medievalFactionsAPI = mock(MedievalFactionsAPI.class);
-        when(medievalFactionsAPI.getFaction(player)).thenReturn(faction);
+        factionLookup = mock(FactionLookup.class);
+        when(factionLookup.getFactionName(player)).thenReturn("TestFaction");
+        when(factionLookup.leadsFaction(player)).thenReturn(true);
 
         Democracy democracy = mock(Democracy.class);
-        when(democracy.getMedievalFactionsAPI()).thenReturn(medievalFactionsAPI);
+        when(democracy.getFactionLookup()).thenReturn(factionLookup);
 
         persistentData = new PersistentData();
         ElectionFactory electionFactory = new ElectionFactory(persistentData);
@@ -62,5 +59,13 @@ class StartCommandTest {
         startCommand.execute(player);
 
         assertFalse(startCommand.execute(player));
+    }
+
+    @Test
+    void aMemberWhoDoesNotLeadTheFactionCannotStartAnElection() {
+        when(factionLookup.leadsFaction(player)).thenReturn(false);
+
+        assertFalse(startCommand.execute(player));
+        assertTrue(persistentData.getElectionForFaction("TestFaction") == null);
     }
 }

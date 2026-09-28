@@ -4,8 +4,8 @@ import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.CandidateFactory;
 import dansplugins.democracy.factories.ElectionFactory;
 import dansplugins.democracy.factories.VoterFactory;
-import dansplugins.factionsystem.MedievalFactions;
-import dansplugins.factionsystem.externalapi.MedievalFactionsAPI;
+import dansplugins.democracy.integrators.FactionLookup;
+import dansplugins.democracy.integrators.MedievalFactionsLookup;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -37,7 +37,7 @@ public final class Democracy extends PonderBukkitPlugin {
 
     // Looked up in onEnable() rather than here: this class is constructed when the jar is
     // loaded, before any plugin (Medieval Factions included) has been enabled.
-    private MedievalFactionsAPI medievalFactionsAPI;
+    private FactionLookup factionLookup;
     private final CommandService commandService = new CommandService(getPonder());
     private final ConfigService configService = new ConfigService(this);
     private final PersistentData persistentData = new PersistentData();
@@ -57,8 +57,8 @@ public final class Democracy extends PonderBukkitPlugin {
     @Override
     public void onEnable() {
         // depend: [MedievalFactions] means it has been enabled by now, so its API is available
-        medievalFactionsAPI = lookUpMedievalFactionsAPI();
-        if (medievalFactionsAPI == null) {
+        factionLookup = MedievalFactionsLookup.lookUp(getServer().getPluginManager().getPlugin("MedievalFactions"));
+        if (factionLookup == null) {
             getLogger().severe("Democracy is being disabled because Medieval Factions is not enabled.");
             getServer().getPluginManager().disablePlugin(this);
             return;
@@ -175,17 +175,8 @@ public final class Democracy extends PonderBukkitPlugin {
         return configService.getBoolean("debugMode");
     }
 
-    public MedievalFactionsAPI getMedievalFactionsAPI() {
-        return medievalFactionsAPI;
-    }
-
-    /**
-     * Looks up the Medieval Factions API.
-     * @return The API, or null if Medieval Factions has not been enabled.
-     */
-    static MedievalFactionsAPI lookUpMedievalFactionsAPI() {
-        MedievalFactions medievalFactions = MedievalFactions.getInstance();
-        return medievalFactions == null ? null : medievalFactions.getAPI();
+    public FactionLookup getFactionLookup() {
+        return factionLookup;
     }
 
     /**
