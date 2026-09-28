@@ -4,7 +4,6 @@ import dansplugins.democracy.Democracy;
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.objects.Candidate;
 import dansplugins.democracy.objects.Election;
-import dansplugins.factionsystem.externalapi.MF_Faction;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -38,13 +37,13 @@ public class InfoCommand extends AbstractPluginCommand {
         }
         Player player = (Player) commandSender;
 
-        MF_Faction faction = democracy.getMedievalFactionsAPI().getFaction(player);
-        if (faction == null) {
+        String factionName = democracy.getFactionLookup().getFactionName(player);
+        if (factionName == null) {
             player.sendMessage(ChatColor.RED + "You must be in a faction to view election information.");
             return false;
         }
 
-        Election election = persistentData.getElectionForFaction(faction.getName());
+        Election election = persistentData.getElectionForFaction(factionName);
         if (election == null) {
             player.sendMessage(ChatColor.RED + "There is no election currently in progress in your faction.");
             return false;

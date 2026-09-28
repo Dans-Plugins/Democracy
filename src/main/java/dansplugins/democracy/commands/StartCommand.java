@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import dansplugins.democracy.Democracy;
-import dansplugins.factionsystem.externalapi.MF_Faction;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 
 import java.util.ArrayList;
@@ -38,18 +37,18 @@ public class StartCommand extends AbstractPluginCommand {
         }
         Player player = (Player) commandSender;
 
-        MF_Faction faction = democracy.getMedievalFactionsAPI().getFaction(player);
-        if (faction == null || !faction.getOwner().equals(player.getUniqueId())) {
+        String factionName = democracy.getFactionLookup().getFactionName(player);
+        if (factionName == null || !democracy.getFactionLookup().leadsFaction(player)) {
             player.sendMessage(ChatColor.RED + "You must be the owner of a faction to start an election.");
             return false;
         }
 
-        if (persistentData.getElectionForFaction(faction.getName()) != null) {
+        if (persistentData.getElectionForFaction(factionName) != null) {
             player.sendMessage(ChatColor.RED + "An election is already in progress.");
             return false;
         }
 
-        UUID electionUUID = electionFactory.createElection(player, faction.getName());
+        UUID electionUUID = electionFactory.createElection(player, factionName);
         if (electionUUID == null) {
             player.sendMessage(ChatColor.RED + "An election is already in progress.");
             return false;

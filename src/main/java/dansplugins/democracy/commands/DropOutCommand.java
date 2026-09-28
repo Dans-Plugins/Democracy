@@ -4,7 +4,6 @@ import dansplugins.democracy.Democracy;
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.objects.Candidate;
 import dansplugins.democracy.objects.Election;
-import dansplugins.factionsystem.externalapi.MF_Faction;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -35,13 +34,13 @@ public class DropOutCommand extends AbstractPluginCommand {
         }
         Player player = (Player) commandSender;
 
-        MF_Faction faction = democracy.getMedievalFactionsAPI().getFaction(player);
-        if (faction == null) {
+        String factionName = democracy.getFactionLookup().getFactionName(player);
+        if (factionName == null) {
             player.sendMessage(ChatColor.RED + "You must be in a faction to drop out of an election.");
             return false;
         }
 
-        Election election = persistentData.getElectionForFaction(faction.getName());
+        Election election = persistentData.getElectionForFaction(factionName);
         if (election == null || !election.isCandidate(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You are not currently a candidate in an election.");
             return false;

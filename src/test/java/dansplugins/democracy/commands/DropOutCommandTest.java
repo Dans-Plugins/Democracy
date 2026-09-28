@@ -4,8 +4,7 @@ import dansplugins.democracy.Democracy;
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.CandidateFactory;
 import dansplugins.democracy.objects.Election;
-import dansplugins.factionsystem.externalapi.MF_Faction;
-import dansplugins.factionsystem.externalapi.MedievalFactionsAPI;
+import dansplugins.democracy.integrators.FactionLookup;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class DropOutCommandTest {
+    private FactionLookup factionLookup;
     private DropOutCommand dropOutCommand;
     private PersistentData persistentData;
     private CandidateFactory candidateFactory;
@@ -31,14 +31,11 @@ class DropOutCommandTest {
         player = mock(Player.class);
         when(player.getUniqueId()).thenReturn(playerUUID);
 
-        MF_Faction faction = mock(MF_Faction.class);
-        when(faction.getName()).thenReturn("TestFaction");
-
-        MedievalFactionsAPI medievalFactionsAPI = mock(MedievalFactionsAPI.class);
-        when(medievalFactionsAPI.getFaction(player)).thenReturn(faction);
+        factionLookup = mock(FactionLookup.class);
+        when(factionLookup.getFactionName(player)).thenReturn("TestFaction");
 
         Democracy democracy = mock(Democracy.class);
-        when(democracy.getMedievalFactionsAPI()).thenReturn(medievalFactionsAPI);
+        when(democracy.getFactionLookup()).thenReturn(factionLookup);
 
         persistentData = new PersistentData();
         candidateFactory = new CandidateFactory(persistentData);
