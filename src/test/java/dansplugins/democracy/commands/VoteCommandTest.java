@@ -9,6 +9,7 @@ import dansplugins.democracy.objects.Election;
 import dansplugins.democracy.objects.Voter;
 import dansplugins.democracy.integrators.FactionLookup;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,7 @@ class VoteCommandTest {
     private Player candidatePlayer;
     private UUID candidateUUID;
     private UUID otherCandidateUUID;
+    private UUID offlineCandidateUUID;
     private Election election;
     private MockedStatic<Bukkit> bukkit;
 
@@ -53,10 +55,25 @@ class VoteCommandTest {
         when(otherCandidatePlayer.getUniqueId()).thenReturn(otherCandidateUUID);
         when(otherCandidatePlayer.getName()).thenReturn("OtherCandidateName");
 
+        offlineCandidateUUID = UUID.randomUUID();
+        Player offlineCandidatePlayer = mock(Player.class);
+        when(offlineCandidatePlayer.getUniqueId()).thenReturn(offlineCandidateUUID);
+
+        UUID nonCandidateUUID = UUID.randomUUID();
+        Player nonCandidatePlayer = mock(Player.class);
+        when(nonCandidatePlayer.getUniqueId()).thenReturn(nonCandidateUUID);
+        when(nonCandidatePlayer.getName()).thenReturn("NonCandidateName");
+
         bukkit = mockStatic(Bukkit.class);
         bukkit.when(() -> Bukkit.getPlayer("CandidateName")).thenReturn(candidatePlayer);
         bukkit.when(() -> Bukkit.getPlayer("OtherCandidateName")).thenReturn(otherCandidatePlayer);
+        bukkit.when(() -> Bukkit.getPlayer("NonCandidateName")).thenReturn(nonCandidatePlayer);
         bukkit.when(() -> Bukkit.getPlayer("NoSuchPlayer")).thenReturn(null);
+        bukkit.when(() -> Bukkit.getPlayer("OfflineCandidateName")).thenReturn(null);
+        stubOfflinePlayerName(candidateUUID, "CandidateName");
+        stubOfflinePlayerName(otherCandidateUUID, "OtherCandidateName");
+        stubOfflinePlayerName(offlineCandidateUUID, "OfflineCandidateName");
+        stubOfflinePlayerName(nonCandidateUUID, "NonCandidateName");
 
         factionLookup = mock(FactionLookup.class);
         when(factionLookup.getFactionName(voter)).thenReturn("TestFaction");
@@ -73,6 +90,13 @@ class VoteCommandTest {
         persistentData.addElection(election);
         candidateFactory.createCandidate(candidatePlayer, election);
         candidateFactory.createCandidate(otherCandidatePlayer, election);
+        candidateFactory.createCandidate(offlineCandidatePlayer, election);
+    }
+
+    private void stubOfflinePlayerName(UUID playerUUID, String name) {
+        OfflinePlayer offlinePlayer = mock(OfflinePlayer.class);
+        when(offlinePlayer.getName()).thenReturn(name);
+        bukkit.when(() -> Bukkit.getOfflinePlayer(playerUUID)).thenReturn(offlinePlayer);
     }
 
     @AfterEach
@@ -88,6 +112,26 @@ class VoteCommandTest {
     @Test
     void failsWhenTargetIsNotACandidate() {
         assertFalse(voteCommand.execute(voter, new String[] { "NoSuchPlayer" }));
+    }
+
+    @Test
+    void failsWhenTargetIsAnOnlinePlayerWhoIsNotACandidate() {
+        assertFalse(voteCommand.execute(voter, new String[] { "NonCandidateName" }));
+        assertFalse(election.isVoter(voter.getUniqueId()));
+    }
+
+    @Test
+    void succeedsAndRecordsVoteForACandidateWhoIsOffline() {
+        assertTrue(voteCommand.execute(voter, new String[] { "OfflineCandidateName" }));
+
+        assertEquals(1, persistentData.getCandidate(election.getUUID(), offlineCandidateUUID).getNumVoter());
+    }
+
+    @Test
+    void matchesTheCandidateNameCaseInsensitively() {
+        assertTrue(voteCommand.execute(voter, new String[] { "candidatename" }));
+
+        assertEquals(1, persistentData.getCandidate(election.getUUID(), candidateUUID).getNumVoter());
     }
 
     @Test
