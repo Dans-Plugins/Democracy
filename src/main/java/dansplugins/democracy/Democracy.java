@@ -93,14 +93,14 @@ public final class Democracy extends PonderBukkitPlugin {
         initializeCommandService();
 
         // usage reporting: one event now, one per command; see config.yml
-        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName())
+        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName(), getDescription().getVersion())
                 .key(configService.getUsageReportingKey())
                 .enabled(configService.isUsageReportingEnabled())
                 .serverWideConfig(getDataFolder().getParentFile())
                 .logger(getLogger())
                 .build();
         logUsageReportingStatus();
-        trace.report("startup", null, Collections.singletonMap("version", getDescription().getVersion()));
+        trace.report("startup");
 
         logger.log("Democracy " + getVersion() + " has been enabled.");
     }
