@@ -13,6 +13,7 @@ import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * This command is intended to allow faction members to vote for a candidate in the current election.
@@ -65,13 +66,13 @@ public class VoteCommand extends AbstractPluginCommand {
             return false;
         }
 
-        Player target = Bukkit.getPlayer(args[0]);
-        if (target == null || !election.isCandidate(target.getUniqueId())) {
+        UUID targetUUID = findCandidateByName(election, args[0]);
+        if (targetUUID == null) {
             player.sendMessage(ChatColor.RED + "That player is not a candidate in this election.");
             return false;
         }
 
-        Candidate candidate = persistentData.getCandidate(election.getUUID(), target.getUniqueId());
+        Candidate candidate = persistentData.getCandidate(election.getUUID(), targetUUID);
         if (candidate == null) {
             player.sendMessage(ChatColor.RED + "That candidate's record could not be found. Your vote was not cast.");
             return false;
@@ -83,7 +84,20 @@ public class VoteCommand extends AbstractPluginCommand {
         }
 
         candidate.addVoter(player.getUniqueId());
-        player.sendMessage(ChatColor.GREEN + "Your vote for " + target.getName() + " has been cast.");
+        player.sendMessage(ChatColor.GREEN + "Your vote for " + Bukkit.getOfflinePlayer(targetUUID).getName() + " has been cast.");
         return true;
+    }
+
+    /**
+     * Matches the name against the election's own candidates, so a candidate who is offline can still be voted for.
+     */
+    private UUID findCandidateByName(Election election, String name) {
+        for (UUID candidateUUID : election.getCandidateUUIDs()) {
+            String candidateName = Bukkit.getOfflinePlayer(candidateUUID).getName();
+            if (name.equalsIgnoreCase(candidateName)) {
+                return candidateUUID;
+            }
+        }
+        return null;
     }
 }
