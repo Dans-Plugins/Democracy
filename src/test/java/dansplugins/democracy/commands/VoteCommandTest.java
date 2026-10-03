@@ -8,6 +8,7 @@ import dansplugins.democracy.objects.Candidate;
 import dansplugins.democracy.objects.Election;
 import dansplugins.democracy.objects.Voter;
 import dansplugins.democracy.integrators.FactionLookup;
+import dansplugins.democracy.services.StorageService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -22,7 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class VoteCommandTest {
@@ -38,6 +41,7 @@ class VoteCommandTest {
     private UUID offlineCandidateUUID;
     private Election election;
     private MockedStatic<Bukkit> bukkit;
+    private StorageService storageService;
 
     @BeforeEach
     void setUp() {
@@ -84,7 +88,8 @@ class VoteCommandTest {
         persistentData = new PersistentData();
         candidateFactory = new CandidateFactory(persistentData);
         voterFactory = new VoterFactory(persistentData);
-        voteCommand = new VoteCommand(democracy, persistentData, voterFactory);
+        storageService = mock(StorageService.class);
+        voteCommand = new VoteCommand(democracy, persistentData, voterFactory, storageService);
 
         election = new Election(voter, "TestFaction");
         persistentData.addElection(election);
@@ -140,6 +145,20 @@ class VoteCommandTest {
 
         Candidate candidate = persistentData.getCandidate(election.getUUID(), candidateUUID);
         assertEquals(1, candidate.getNumVoter());
+    }
+
+    @Test
+    void votingSavesTheVoteStraightAway() {
+        voteCommand.execute(voter, new String[] { "CandidateName" });
+
+        verify(storageService).save();
+    }
+
+    @Test
+    void aRejectedVoteDoesNotSave() {
+        voteCommand.execute(voter, new String[] { "NoSuchPlayer" });
+
+        verify(storageService, never()).save();
     }
 
     @Test

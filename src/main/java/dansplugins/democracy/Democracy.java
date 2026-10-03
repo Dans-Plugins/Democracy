@@ -183,13 +183,16 @@ public final class Democracy extends PonderBukkitPlugin {
      * Initializes Ponder's command service with the plugin's commands.
      */
     private void initializeCommandService() {
+        // the commands that change election state save it straight away, so a crash or kill loses
+        // nothing confirmed to a player unless that save failed (StorageService logs why); onDisable()
+        // saves once more on the way down
         ArrayList<AbstractPluginCommand> commands = new ArrayList<>(Arrays.asList(
                 new HelpCommand(),
-                new StartCommand(this, electionFactory, persistentData),
-                new DropOutCommand(this, persistentData),
+                new StartCommand(this, electionFactory, persistentData, storageService),
+                new DropOutCommand(this, persistentData, storageService),
                 new InfoCommand(this, persistentData),
-                new RunCommand(this, persistentData, candidateFactory),
-                new VoteCommand(this, persistentData, voterFactory)
+                new RunCommand(this, persistentData, candidateFactory, storageService),
+                new VoteCommand(this, persistentData, voterFactory, storageService)
         ));
         commandService.initialize(commands, "That command wasn't found.");
     }
