@@ -4,6 +4,7 @@ import dansplugins.democracy.Democracy;
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.ElectionFactory;
 import dansplugins.democracy.integrators.FactionLookup;
+import dansplugins.democracy.services.StorageService;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +24,7 @@ class StartCommandTest {
     private PersistentData persistentData;
     private Player player;
     private FactionLookup factionLookup;
+    private StorageService storageService;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +41,8 @@ class StartCommandTest {
 
         persistentData = new PersistentData();
         ElectionFactory electionFactory = new ElectionFactory(persistentData);
-        startCommand = new StartCommand(democracy, electionFactory, persistentData);
+        storageService = mock(StorageService.class);
+        startCommand = new StartCommand(democracy, electionFactory, persistentData, storageService);
     }
 
     @Test
@@ -52,6 +56,22 @@ class StartCommandTest {
         startCommand.execute(player);
 
         verify(player).sendMessage(ChatColor.GREEN + "Election has been started.");
+    }
+
+    @Test
+    void startingAnElectionSavesItStraightAway() {
+        startCommand.execute(player);
+
+        verify(storageService).save();
+    }
+
+    @Test
+    void aRejectedStartDoesNotSave() {
+        when(factionLookup.leadsFaction(player)).thenReturn(false);
+
+        startCommand.execute(player);
+
+        verify(storageService, never()).save();
     }
 
     @Test

@@ -2,6 +2,7 @@ package dansplugins.democracy.commands;
 
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.ElectionFactory;
+import dansplugins.democracy.services.StorageService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,12 +22,14 @@ public class StartCommand extends AbstractPluginCommand {
     private final Democracy democracy;
     private final ElectionFactory electionFactory;
     private final PersistentData persistentData;
+    private final StorageService storageService;
 
-    public StartCommand(Democracy democracy, ElectionFactory electionFactory, PersistentData persistentData) {
+    public StartCommand(Democracy democracy, ElectionFactory electionFactory, PersistentData persistentData, StorageService storageService) {
         super(new ArrayList<>(Arrays.asList("start")), new ArrayList<>(Arrays.asList("d.start")));
         this.democracy = democracy;
         this.electionFactory = electionFactory;
         this.persistentData = persistentData;
+        this.storageService = storageService;
     }
 
     @Override
@@ -53,6 +56,7 @@ public class StartCommand extends AbstractPluginCommand {
             player.sendMessage(ChatColor.RED + "An election is already in progress.");
             return false;
         }
+        storageService.save();
         player.sendMessage(ChatColor.GREEN + "Election has been started.");
         return true;
     }

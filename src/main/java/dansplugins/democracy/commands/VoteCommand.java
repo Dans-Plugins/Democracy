@@ -5,6 +5,7 @@ import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.VoterFactory;
 import dansplugins.democracy.objects.Candidate;
 import dansplugins.democracy.objects.Election;
+import dansplugins.democracy.services.StorageService;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -23,12 +24,14 @@ public class VoteCommand extends AbstractPluginCommand {
     private final Democracy democracy;
     private final PersistentData persistentData;
     private final VoterFactory voterFactory;
+    private final StorageService storageService;
 
-    public VoteCommand(Democracy democracy, PersistentData persistentData, VoterFactory voterFactory) {
+    public VoteCommand(Democracy democracy, PersistentData persistentData, VoterFactory voterFactory, StorageService storageService) {
         super(new ArrayList<>(Arrays.asList("vote")), new ArrayList<>(Arrays.asList("d.vote")));
         this.democracy = democracy;
         this.persistentData = persistentData;
         this.voterFactory = voterFactory;
+        this.storageService = storageService;
     }
 
     @Override
@@ -84,6 +87,7 @@ public class VoteCommand extends AbstractPluginCommand {
         }
 
         candidate.addVoter(player.getUniqueId());
+        storageService.save();
         player.sendMessage(ChatColor.GREEN + "Your vote for " + Bukkit.getOfflinePlayer(targetUUID).getName() + " has been cast.");
         return true;
     }

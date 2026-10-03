@@ -4,6 +4,7 @@ import dansplugins.democracy.Democracy;
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.objects.Candidate;
 import dansplugins.democracy.objects.Election;
+import dansplugins.democracy.services.StorageService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,11 +20,13 @@ import java.util.Arrays;
 public class DropOutCommand extends AbstractPluginCommand {
     private final Democracy democracy;
     private final PersistentData persistentData;
+    private final StorageService storageService;
 
-    public DropOutCommand(Democracy democracy, PersistentData persistentData) {
+    public DropOutCommand(Democracy democracy, PersistentData persistentData, StorageService storageService) {
         super(new ArrayList<>(Arrays.asList("dropout")), new ArrayList<>(Arrays.asList("d.dropout")));
         this.democracy = democracy;
         this.persistentData = persistentData;
+        this.storageService = storageService;
     }
 
     @Override
@@ -54,6 +57,7 @@ public class DropOutCommand extends AbstractPluginCommand {
 
         persistentData.removeCandidate(candidate);
         election.removeCandidate(player.getUniqueId());
+        storageService.save();
         player.sendMessage(ChatColor.GREEN + "You have dropped out of the election.");
         return true;
     }

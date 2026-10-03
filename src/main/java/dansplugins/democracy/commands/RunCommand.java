@@ -4,6 +4,7 @@ import dansplugins.democracy.Democracy;
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.CandidateFactory;
 import dansplugins.democracy.objects.Election;
+import dansplugins.democracy.services.StorageService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,12 +21,14 @@ public class RunCommand extends AbstractPluginCommand {
     private final Democracy democracy;
     private final PersistentData persistentData;
     private final CandidateFactory candidateFactory;
+    private final StorageService storageService;
 
-    public RunCommand(Democracy democracy, PersistentData persistentData, CandidateFactory candidateFactory) {
+    public RunCommand(Democracy democracy, PersistentData persistentData, CandidateFactory candidateFactory, StorageService storageService) {
         super(new ArrayList<>(Arrays.asList("run")), new ArrayList<>(Arrays.asList("d.run")));
         this.democracy = democracy;
         this.persistentData = persistentData;
         this.candidateFactory = candidateFactory;
+        this.storageService = storageService;
     }
 
     @Override
@@ -54,6 +57,7 @@ public class RunCommand extends AbstractPluginCommand {
         }
 
         candidateFactory.createCandidate(player, election);
+        storageService.save();
         player.sendMessage(ChatColor.GREEN + "You are now a candidate in the election.");
         return true;
     }
