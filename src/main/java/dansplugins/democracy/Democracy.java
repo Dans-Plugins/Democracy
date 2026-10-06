@@ -10,6 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import dansplugins.democracy.commands.StartCommand;
+import dansplugins.democracy.commands.CancelCommand;
 import dansplugins.democracy.commands.DefaultCommand;
 import dansplugins.democracy.commands.DropOutCommand;
 import dansplugins.democracy.commands.HelpCommand;
@@ -189,6 +190,7 @@ public final class Democracy extends PonderBukkitPlugin {
         ArrayList<AbstractPluginCommand> commands = new ArrayList<>(Arrays.asList(
                 new HelpCommand(),
                 new StartCommand(this, electionFactory, persistentData, storageService),
+                new CancelCommand(this, persistentData, storageService),
                 new DropOutCommand(this, persistentData, storageService),
                 new InfoCommand(this, persistentData),
                 new RunCommand(this, persistentData, candidateFactory, storageService),

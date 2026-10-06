@@ -9,6 +9,8 @@ commands:
   d:
 
 permissions:
+  d.default:
+    default: true
   d.help:
     default: true
   d.info:
@@ -20,4 +22,6 @@ permissions:
   d.dropout:
     default: true
   d.start:
+    default: true
+  d.cancel:
     default: true

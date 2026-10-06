@@ -10,3 +10,4 @@ All commands use `/d` or `/democracy` as the base. Democracy requires Medieval F
 | `/d dropout` | Drop out of the current election. | `d.dropout` |
 | `/d vote <candidate>` | Vote for a candidate in your faction's election. | `d.vote` |
 | `/d start` | Start an election in your faction (faction leader). | `d.start` |
+| `/d cancel` | Cancel your faction's election without naming a winner, discarding its candidates and votes (faction leader). | `d.cancel` |

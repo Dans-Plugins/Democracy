@@ -47,6 +47,34 @@ class PersistentDataTest {
     }
 
     @Test
+    void removingAnElectionRemovesOnlyItsOwnCandidateAndVoterRecords() {
+        Election removed = new Election(player, "FirstFaction");
+        Election kept = new Election(player, "SecondFaction");
+        persistentData.addElection(removed);
+        persistentData.addElection(kept);
+        persistentData.addCandidate(new Candidate(player, removed));
+        persistentData.addVoter(new Voter(player, removed));
+        Candidate keptCandidate = new Candidate(player, kept);
+        Voter keptVoter = new Voter(player, kept);
+        persistentData.addCandidate(keptCandidate);
+        persistentData.addVoter(keptVoter);
+
+        assertTrue(persistentData.removeElection(removed));
+
+        assertNull(persistentData.getElection(removed.getUUID()));
+        assertNull(persistentData.getCandidate(removed.getUUID(), playerUUID));
+        assertNull(persistentData.getVoter(removed.getUUID(), playerUUID));
+        assertSame(kept, persistentData.getElection(kept.getUUID()));
+        assertSame(keptCandidate, persistentData.getCandidate(kept.getUUID(), playerUUID));
+        assertSame(keptVoter, persistentData.getVoter(kept.getUUID(), playerUUID));
+    }
+
+    @Test
+    void removingAnUnknownElectionIsRefused() {
+        assertFalse(persistentData.removeElection(new Election(player, "TestFaction")));
+    }
+
+    @Test
     void candidateCanBeAddedRetrievedAndRemoved() {
         Election election = new Election(player, "TestFaction");
         Candidate candidate = new Candidate(player, election);
