@@ -40,11 +40,16 @@ public class PersistentData {
         return true;
     }
 
+    /**
+     * Removes the election along with its candidate and voter records, which mean nothing without it.
+     */
     public boolean removeElection(Election election) {
         if (!isElection(election)) {
             return false;
         }
         elections.remove(election);
+        candidates.removeIf(candidate -> candidate.getElectionUUID().equals(election.getUUID()));
+        voters.removeIf(voter -> voter.getElectionUUID().equals(election.getUUID()));
         return true;
     }
 

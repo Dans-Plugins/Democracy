@@ -20,4 +20,13 @@ class HelpCommandTest {
         verify(sender).sendMessage(ChatColor.AQUA + "/d vote <candidate>");
         verify(sender, never()).sendMessage(ChatColor.AQUA + "/d vote");
     }
+
+    @Test
+    void listsCancel() {
+        CommandSender sender = mock(CommandSender.class);
+
+        new HelpCommand().execute(sender);
+
+        verify(sender).sendMessage(ChatColor.AQUA + "/d cancel");
+    }
 }
