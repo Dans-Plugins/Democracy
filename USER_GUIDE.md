@@ -30,6 +30,7 @@ An election in progress survives a server restart: elections, candidates and vot
 - A player can only take part in their own faction's election: running and voting both apply to the election of the faction the player is in. Members of other factions, allies included, cannot run or vote in it; if their own faction has no election, they are told so.
 - Players in no faction can neither run nor vote.
 - Each player can vote once per election, for a player who is running in it; a second vote is refused and the first one stands.
+- A candidate can drop out of their faction's election with `/d dropout`; a player who is not running in it is told so, and a player in no faction is refused.
 
 ## Permissions
 
