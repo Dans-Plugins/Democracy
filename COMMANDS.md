@@ -4,6 +4,7 @@ All commands use `/d` or `/democracy` as the base. Democracy requires Medieval F
 
 | Command | Description | Permission |
 |---------|-------------|------------|
+| `/d` | View the plugin's version, author and wiki link. | `d.default` (registered, but not yet checked) |
 | `/d help` | View a list of commands. | `d.help` |
 | `/d info` | View information about the current election in your faction. | `d.info` |
 | `/d run` | Declare your candidacy in your faction's election. | `d.run` |
