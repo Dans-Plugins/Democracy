@@ -2,7 +2,7 @@
 
 ## What is Democracy?
 
-Democracy is a Spigot plugin that adds democratic elections to Medieval Factions servers. Faction members can run for leadership, vote for candidates, and determine their faction leader through an in-game election process.
+Democracy is a Spigot plugin that adds democratic elections to Medieval Factions servers. Faction leaders can start elections, and faction members can run as candidates and vote for them. Naming a winner and making them faction leader is not implemented yet: an election stays in progress until the faction leader cancels it.
 
 ## Requirements
 
@@ -30,7 +30,7 @@ An election in progress survives a server restart: elections, candidates and vot
 - A player can only take part in their own faction's election: running and voting both apply to the election of the faction the player is in. Members of other factions, allies included, cannot run or vote in it; if their own faction has no election, they are told so.
 - Players in no faction can neither run nor vote.
 - Each player can vote once per election, for a player who is running in it; a second vote is refused and the first one stands.
-- A candidate can drop out of their faction's election with `/d dropout`; a player who is not running in it is told so, and a player in no faction is refused.
+- A candidate can drop out of their faction's election with `/d dropout`; a player who is not running in it is told so, and a player in no faction is refused. Votes already cast for a candidate who drops out are discarded, and the players who cast them cannot vote again in that election. A candidate who drops out can run again with `/d run`, starting from zero votes.
 
 ## Permissions
 
