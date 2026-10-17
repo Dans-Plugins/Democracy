@@ -6,6 +6,7 @@ import dansplugins.democracy.factories.CandidateFactory;
 import dansplugins.democracy.objects.Election;
 import dansplugins.democracy.integrators.FactionLookup;
 import dansplugins.democracy.services.StorageService;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -101,5 +102,14 @@ class RunCommandTest {
         runCommand.execute(player);
 
         assertFalse(runCommand.execute(player));
+    }
+
+    @Test
+    void theConsoleCannotRun() {
+        CommandSender console = mock(CommandSender.class);
+
+        assertFalse(runCommand.execute(console));
+        verify(console).sendMessage("This command cannot be used in the console.");
+        verify(storageService, never()).save();
     }
 }

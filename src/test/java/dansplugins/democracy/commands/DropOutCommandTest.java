@@ -6,6 +6,8 @@ import dansplugins.democracy.factories.CandidateFactory;
 import dansplugins.democracy.objects.Election;
 import dansplugins.democracy.integrators.FactionLookup;
 import dansplugins.democracy.services.StorageService;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,5 +88,24 @@ class DropOutCommandTest {
         assertTrue(dropOutCommand.execute(player));
         assertFalse(election.isCandidate(playerUUID));
         assertFalse(dropOutCommand.execute(player));
+    }
+
+    @Test
+    void aPlayerInNoFactionCannotDropOut() {
+        candidateFactory.createCandidate(player, election);
+        when(factionLookup.getFactionName(player)).thenReturn(null);
+
+        assertFalse(dropOutCommand.execute(player));
+        verify(player).sendMessage(ChatColor.RED + "You must be in a faction to drop out of an election.");
+        assertTrue(election.isCandidate(playerUUID));
+    }
+
+    @Test
+    void theConsoleCannotDropOut() {
+        CommandSender console = mock(CommandSender.class);
+
+        assertFalse(dropOutCommand.execute(console));
+        verify(console).sendMessage("This command cannot be used in the console.");
+        verify(storageService, never()).save();
     }
 }

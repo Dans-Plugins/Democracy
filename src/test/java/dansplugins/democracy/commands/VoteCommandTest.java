@@ -10,7 +10,9 @@ import dansplugins.democracy.objects.Voter;
 import dansplugins.democracy.integrators.FactionLookup;
 import dansplugins.democracy.services.StorageService;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -112,6 +114,39 @@ class VoteCommandTest {
     @Test
     void failsWithNoArguments() {
         assertFalse(voteCommand.execute(voter, new String[0]));
+    }
+
+    @Test
+    void withoutArgumentsTheUsageIsShown() {
+        assertFalse(voteCommand.execute(voter));
+        verify(voter).sendMessage(ChatColor.RED + "Usage: /d vote <candidate>");
+    }
+
+    @Test
+    void theConsoleCannotVote() {
+        CommandSender console = mock(CommandSender.class);
+
+        assertFalse(voteCommand.execute(console, new String[] { "CandidateName" }));
+        verify(console).sendMessage("This command cannot be used in the console.");
+        assertEquals(0, persistentData.getCandidate(election.getUUID(), candidateUUID).getNumVoter());
+    }
+
+    @Test
+    void aPlayerInNoFactionCannotVote() {
+        when(factionLookup.getFactionName(voter)).thenReturn(null);
+
+        assertFalse(voteCommand.execute(voter, new String[] { "CandidateName" }));
+        verify(voter).sendMessage(ChatColor.RED + "You must be in a faction to vote in an election.");
+        assertEquals(0, persistentData.getCandidate(election.getUUID(), candidateUUID).getNumVoter());
+    }
+
+    @Test
+    void failsWhenTheFactionHasNoElection() {
+        persistentData.removeElection(election);
+
+        assertFalse(voteCommand.execute(voter, new String[] { "CandidateName" }));
+        verify(voter).sendMessage(ChatColor.RED + "There is no election currently in progress in your faction.");
+        verify(storageService, never()).save();
     }
 
     @Test
