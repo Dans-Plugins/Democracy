@@ -6,7 +6,9 @@ import dansplugins.democracy.factories.CandidateFactory;
 import dansplugins.democracy.objects.Election;
 import dansplugins.democracy.integrators.FactionLookup;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class InfoCommandTest {
@@ -66,5 +69,21 @@ class InfoCommandTest {
         new CandidateFactory(persistentData).createCandidate(player, election);
 
         assertTrue(infoCommand.execute(player));
+    }
+
+    @Test
+    void aPlayerInNoFactionIsToldSo() {
+        when(factionLookup.getFactionName(player)).thenReturn(null);
+
+        assertFalse(infoCommand.execute(player));
+        verify(player).sendMessage(ChatColor.RED + "You must be in a faction to view election information.");
+    }
+
+    @Test
+    void theConsoleCannotViewElectionInfo() {
+        CommandSender console = mock(CommandSender.class);
+
+        assertFalse(infoCommand.execute(console));
+        verify(console).sendMessage("This command cannot be used in the console.");
     }
 }

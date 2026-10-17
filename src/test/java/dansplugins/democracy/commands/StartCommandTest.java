@@ -6,6 +6,7 @@ import dansplugins.democracy.factories.ElectionFactory;
 import dansplugins.democracy.integrators.FactionLookup;
 import dansplugins.democracy.services.StorageService;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,5 +88,23 @@ class StartCommandTest {
 
         assertFalse(startCommand.execute(player));
         assertTrue(persistentData.getElectionForFaction("TestFaction") == null);
+    }
+
+    @Test
+    void aPlayerInNoFactionCannotStartAnElection() {
+        when(factionLookup.getFactionName(player)).thenReturn(null);
+
+        assertFalse(startCommand.execute(player));
+        verify(player).sendMessage(ChatColor.RED + "You must be the owner of a faction to start an election.");
+        verify(storageService, never()).save();
+    }
+
+    @Test
+    void theConsoleCannotStartAnElection() {
+        CommandSender console = mock(CommandSender.class);
+
+        assertFalse(startCommand.execute(console));
+        verify(console).sendMessage("This command cannot be used in the console.");
+        verify(storageService, never()).save();
     }
 }
