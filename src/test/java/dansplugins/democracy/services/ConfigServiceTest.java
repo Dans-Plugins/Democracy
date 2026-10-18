@@ -3,12 +3,19 @@ package dansplugins.democracy.services;
 import dansplugins.democracy.Democracy;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -22,16 +29,81 @@ class ConfigServiceTest {
     private ConfigService configService;
     private FileConfiguration config;
     private CommandSender sender;
+    private Democracy democracy;
 
     @BeforeEach
     void setUp() {
         config = mock(FileConfiguration.class);
         sender = mock(CommandSender.class);
 
-        Democracy democracy = mock(Democracy.class);
+        democracy = mock(Democracy.class);
         when(democracy.getConfig()).thenReturn(config);
 
         configService = new ConfigService(democracy);
+    }
+
+    /**
+     * Runs {@link ConfigService#saveMissingConfigDefaultsIfNotPresent()} against a real
+     * {@link YamlConfiguration} and returns what it would write to disk, read back in.
+     */
+    private YamlConfiguration saveDefaultsAndReadBack(YamlConfiguration onDisk) throws InvalidConfigurationException {
+        when(democracy.getConfig()).thenReturn(onDisk);
+        when(democracy.getVersion()).thenReturn("v0.4.1");
+
+        configService.saveMissingConfigDefaultsIfNotPresent();
+
+        verify(democracy).saveConfig();
+        YamlConfiguration written = new YamlConfiguration();
+        written.loadFromString(onDisk.saveToString());
+        return written;
+    }
+
+    @Test
+    void saveDefaults_writesTheVersionAndDebugModeOffIntoAnEmptyConfig() throws InvalidConfigurationException {
+        YamlConfiguration written = saveDefaultsAndReadBack(new YamlConfiguration());
+
+        assertEquals("v0.4.1", written.get("version", null));
+        assertEquals(false, written.get("debugMode", null));
+    }
+
+    @Test
+    void saveDefaults_replacesAnOlderVersion() throws InvalidConfigurationException {
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.set("version", "v0.1");
+
+        YamlConfiguration written = saveDefaultsAndReadBack(onDisk);
+
+        assertEquals("v0.4.1", written.get("version", null));
+    }
+
+    @Test
+    void saveDefaults_keepsDebugModeWhenItIsAlreadySet() throws InvalidConfigurationException {
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.set("version", "v0.4.1");
+        onDisk.set("debugMode", true);
+
+        YamlConfiguration written = saveDefaultsAndReadBack(onDisk);
+
+        assertEquals(true, written.get("debugMode", null));
+    }
+
+    @Test
+    void saveDefaults_writesTheBundledUsageReportingBlockAndKeepsExistingKeys() throws InvalidConfigurationException {
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("config.yml");
+        assertNotNull(stream, "config.yml is missing from the jar's resources");
+        YamlConfiguration bundled = YamlConfiguration.loadConfiguration(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.set("version", "v0.1");
+        onDisk.set("debugMode", true);
+        onDisk.set("usage-reporting.enabled", false);
+        onDisk.setDefaults(bundled);
+
+        YamlConfiguration written = saveDefaultsAndReadBack(onDisk);
+
+        assertEquals(false, written.get("usage-reporting.enabled", null), "an opt-out on disk must survive");
+        assertEquals(bundled.getString("usage-reporting.endpoint"), written.get("usage-reporting.endpoint", null));
+        assertEquals(bundled.getString("usage-reporting.key"), written.get("usage-reporting.key", null));
+        assertEquals(true, written.get("debugMode", null));
     }
 
     @Test
