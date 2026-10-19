@@ -54,6 +54,12 @@ Run the build with:
 
     mvn clean package
 
+This also runs the unit tests in `src/test/java` (JUnit 5 and Mockito). To run only the tests:
+
+    mvn test
+
+The tests mock Bukkit and the Medieval Factions lookup (`FactionLookup`), so no running server or installed Medieval Factions plugin is needed to run them. New behaviour should come with a test alongside its class's existing one.
+
 For manual testing, place the JAR and the Medieval Factions JAR into a local Spigot server's `plugins/` folder and restart.
 
 ## Questions
