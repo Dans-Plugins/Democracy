@@ -3,6 +3,7 @@ package dansplugins.democracy.commands;
 import dansplugins.democracy.Democracy;
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.CandidateFactory;
+import dansplugins.democracy.objects.Candidate;
 import dansplugins.democracy.objects.Election;
 import dansplugins.democracy.integrators.FactionLookup;
 import org.bukkit.Bukkit;
@@ -13,12 +14,14 @@ import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -85,5 +88,58 @@ class InfoCommandTest {
 
         assertFalse(infoCommand.execute(console));
         verify(console).sendMessage("This command cannot be used in the console.");
+    }
+
+    @Test
+    void listsTheCreatorThenEachCandidateWithTheirVoteCount() {
+        Election election = new Election(player, "TestFaction");
+        persistentData.addElection(election);
+        Player candidatePlayer = playerNamed("CandidateName");
+        new CandidateFactory(persistentData).createCandidate(candidatePlayer, election);
+        Candidate candidate = persistentData.getCandidate(election.getUUID(), candidatePlayer.getUniqueId());
+        candidate.addVoter(UUID.randomUUID());
+        candidate.addVoter(UUID.randomUUID());
+
+        assertTrue(infoCommand.execute(player));
+
+        InOrder messages = inOrder(player);
+        messages.verify(player).sendMessage(ChatColor.AQUA + "=== Election Info ===");
+        messages.verify(player).sendMessage(ChatColor.AQUA + "Started by: PlayerName");
+        messages.verify(player).sendMessage(ChatColor.AQUA + "CandidateName: 2 vote(s)");
+    }
+
+    @Test
+    void aPlayerWhoseNameIsUnknownIsShownByUUID() {
+        Election election = new Election(player, "TestFaction");
+        persistentData.addElection(election);
+        Player candidatePlayer = playerNamed(null);
+        new CandidateFactory(persistentData).createCandidate(candidatePlayer, election);
+
+        assertTrue(infoCommand.execute(player));
+
+        verify(player).sendMessage(ChatColor.AQUA + candidatePlayer.getUniqueId().toString() + ": 0 vote(s)");
+    }
+
+    @Test
+    void aCandidateWithNoCandidateRecordIsShownWithNoVotes() {
+        Election election = new Election(player, "TestFaction");
+        persistentData.addElection(election);
+        Player candidatePlayer = playerNamed("CandidateName");
+        election.addCandidate(candidatePlayer.getUniqueId());
+
+        assertTrue(infoCommand.execute(player));
+
+        verify(player).sendMessage(ChatColor.AQUA + "CandidateName: 0 vote(s)");
+    }
+
+    /** A player whose offline record reports the given name, or no name when it is null. */
+    private Player playerNamed(String name) {
+        UUID uuid = UUID.randomUUID();
+        Player namedPlayer = mock(Player.class);
+        when(namedPlayer.getUniqueId()).thenReturn(uuid);
+        OfflinePlayer offlinePlayer = mock(OfflinePlayer.class);
+        when(offlinePlayer.getName()).thenReturn(name);
+        bukkit.when(() -> Bukkit.getOfflinePlayer(uuid)).thenReturn(offlinePlayer);
+        return namedPlayer;
     }
 }
