@@ -193,6 +193,64 @@ class StorageServiceTest {
         assertTrue(storageService.save());
     }
 
+    @Test
+    void loadTreatsAnEmptyFileAsNoRecords() throws IOException {
+        // Gson reads an empty document as null rather than as an empty list
+        writeFile(StorageService.ELECTIONS_FILE, "");
+
+        assertTrue(storageService.load());
+
+        assertTrue(persistentData.getElections().isEmpty());
+        assertTrue(storageService.save());
+    }
+
+    @Test
+    void saveReplacesWhatWasOnDiskWithTheCurrentState() {
+        assertTrue(storageService.load());
+        Election election = new Election(owner, "TestFaction");
+        persistentData.addElection(election);
+        assertTrue(storageService.save());
+        persistentData.removeElection(election);
+
+        assertTrue(storageService.save());
+
+        PersistentData restarted = new PersistentData();
+        assertTrue(new StorageService(democracyWithDataFolder(dataFolder), restarted).load());
+        assertTrue(restarted.getElections().isEmpty());
+    }
+
+    @Test
+    void saveFailsWhenTheDataFolderCannotBeCreated() throws IOException {
+        // a regular file where the data folder's parent should be makes mkdirs() fail, even as root
+        File blocker = tempDir.resolve("blocker").toFile();
+        Files.write(blocker.toPath(), new byte[0]);
+        File unreachable = new File(blocker, "Democracy");
+        StorageService service = new StorageService(democracyWithDataFolder(unreachable), new PersistentData());
+        assertTrue(service.load());
+
+        assertFalse(service.save());
+
+        assertFalse(unreachable.exists());
+    }
+
+    @Test
+    void saveFailsWhenTheFilesCannotBeWritten() throws IOException {
+        // the data folder's path is taken by a regular file, so exists() passes but every write fails
+        Files.write(dataFolder.toPath(), new byte[0]);
+        assertTrue(storageService.load());
+
+        assertFalse(storageService.save());
+
+        assertTrue(dataFolder.isFile());
+    }
+
+    private static Democracy democracyWithDataFolder(File folder) {
+        Democracy democracy = mock(Democracy.class);
+        when(democracy.getDataFolder()).thenReturn(folder);
+        when(democracy.getLogger()).thenReturn(Logger.getLogger("StorageServiceTest"));
+        return democracy;
+    }
+
     private void writeFile(String name, String content) throws IOException {
         Files.createDirectories(dataFolder.toPath());
         Files.write(new File(dataFolder, name).toPath(), content.getBytes(StandardCharsets.UTF_8));
