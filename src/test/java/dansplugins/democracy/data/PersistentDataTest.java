@@ -60,6 +60,7 @@ class PersistentDataTest {
         persistentData.addElection(first);
         persistentData.addElection(second);
 
+        assertSame(first, persistentData.getElectionForFaction("FirstFaction"));
         assertSame(second, persistentData.getElectionForFaction("SecondFaction"));
     }
 
