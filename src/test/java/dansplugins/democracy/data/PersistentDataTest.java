@@ -47,6 +47,33 @@ class PersistentDataTest {
     }
 
     @Test
+    void getElectionReturnsNullForAnUnknownUUID() {
+        persistentData.addElection(new Election(player, "TestFaction"));
+
+        assertNull(persistentData.getElection(UUID.randomUUID()));
+    }
+
+    @Test
+    void getElectionForFactionPicksTheElectionOfTheNamedFaction() {
+        Election first = new Election(player, "FirstFaction");
+        Election second = new Election(player, "SecondFaction");
+        persistentData.addElection(first);
+        persistentData.addElection(second);
+
+        assertSame(first, persistentData.getElectionForFaction("FirstFaction"));
+        assertSame(second, persistentData.getElectionForFaction("SecondFaction"));
+    }
+
+    @Test
+    void addElectionRejectsARecordRebuiltWithTheSameUUID() {
+        Election election = new Election(player, "TestFaction");
+        persistentData.addElection(election);
+
+        assertFalse(persistentData.addElection(new Election(election.save())));
+        assertEquals(1, persistentData.getElections().size());
+    }
+
+    @Test
     void removingAnElectionRemovesOnlyItsOwnCandidateAndVoterRecords() {
         Election removed = new Election(player, "FirstFaction");
         Election kept = new Election(player, "SecondFaction");
@@ -94,6 +121,42 @@ class PersistentDataTest {
         assertEquals(voter, persistentData.getVoter(election.getUUID(), playerUUID));
         assertTrue(persistentData.removeVoter(voter));
         assertNull(persistentData.getVoter(election.getUUID(), playerUUID));
+    }
+
+    @Test
+    void aSecondCandidateRecordForTheSamePlayerAndElectionIsRefused() {
+        Election election = new Election(player, "TestFaction");
+        Candidate first = new Candidate(player, election);
+        persistentData.addCandidate(first);
+
+        assertFalse(persistentData.addCandidate(new Candidate(player, election)));
+        assertEquals(1, persistentData.getCandidates().size());
+        assertSame(first, persistentData.getCandidate(election.getUUID(), playerUUID));
+    }
+
+    @Test
+    void removingAnUnknownCandidateIsRefused() {
+        Election election = new Election(player, "TestFaction");
+
+        assertFalse(persistentData.removeCandidate(new Candidate(player, election)));
+    }
+
+    @Test
+    void aSecondVoterRecordForTheSamePlayerAndElectionIsRefused() {
+        Election election = new Election(player, "TestFaction");
+        Voter first = new Voter(player, election);
+        persistentData.addVoter(first);
+
+        assertFalse(persistentData.addVoter(new Voter(player, election)));
+        assertEquals(1, persistentData.getVoters().size());
+        assertSame(first, persistentData.getVoter(election.getUUID(), playerUUID));
+    }
+
+    @Test
+    void removingAnUnknownVoterIsRefused() {
+        Election election = new Election(player, "TestFaction");
+
+        assertFalse(persistentData.removeVoter(new Voter(player, election)));
     }
 
     @Test
