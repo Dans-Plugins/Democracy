@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Repeated usage events are coalesced. The vendored trace client is now 0.7.0 (#76): the first report of an event is sent at once, and identical reports in the following 60 seconds are counted and sent as one event, tagged `coalesced` with the count, when the window closes or the plugin is disabled. The `startup` event is never held back. A command used many times a minute therefore costs one report a minute instead of one per use. What an event carries is unchanged. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.7.0.
+
+## [0.4.1] – 2026-10-28
+
+No change to the plugin's behaviour. Documentation fixes (the bare `/d` command is listed, votes lost when a candidate drops out are described, what `debugMode` logs is described, and the README has an image of real in-game output) and unit tests for existing behaviour.
+
 ## [0.4.0] – 2026-10-09
 
 ### Added
