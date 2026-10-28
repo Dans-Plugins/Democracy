@@ -4,9 +4,11 @@
 # plugins are actually in use. Each event also carries a random server ID (the
 # server-id line in plugins/trace/config.yml) so servers can be counted; it
 # identifies no person, account or IP address. Nothing about players is
-# included. Sending happens off the main thread, never blocks a tick, and is
-# dropped silently if the server cannot be reached. The plugin says on every
-# start whether reporting is on.
+# included. A command used again within a minute is counted rather than sent
+# again; the count goes out as one event when the minute is up. Sending
+# happens off the main thread, never blocks a tick, and is dropped silently if
+# the server cannot be reached. The plugin says on every start whether
+# reporting is on.
 #
 # To turn it off for this plugin, set enabled to false below. To turn it off
 # for every plugin on this server that reports to trace, set enabled to false
