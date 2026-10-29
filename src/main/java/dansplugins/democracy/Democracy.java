@@ -8,6 +8,7 @@ import dansplugins.democracy.integrators.FactionLookup;
 import dansplugins.democracy.integrators.MedievalFactionsLookup;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import dansplugins.democracy.commands.StartCommand;
 import dansplugins.democracy.commands.CancelCommand;
@@ -138,7 +139,10 @@ public final class Democracy extends PonderBukkitPlugin {
      * @return A boolean indicating whether the execution of the command was successful.
      */
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        trace.report("command", null, Collections.singletonMap("name", cmd.getName()));
+        // Console, command-block and plugin-dispatched commands are not counted.
+        if (sender instanceof Player) {
+            trace.report("command", null, Collections.singletonMap("name", cmd.getName()));
+        }
         if (args.length == 0) {
             DefaultCommand defaultCommand = new DefaultCommand(this);
             return defaultCommand.execute(sender);
