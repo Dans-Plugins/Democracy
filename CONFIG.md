@@ -4,7 +4,7 @@ A `config.yml` is generated in `plugins/Democracy/` on first run.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `version` | String | *(plugin version)* | Plugin version. Do not edit manually. |
+| `version` | String | *(plugin version, prefixed with `v`, e.g. `v0.4.1`)* | Plugin version. Do not edit manually. |
 | `debugMode` | Boolean | `false` | Prints a line to the console when the plugin is enabled and when it is disabled. Nothing else is logged by it. |
 | `usage-reporting.enabled` | Boolean | `true` | Whether the plugin reports usage events (see below). Set to `false` to turn it off. |
 | `usage-reporting.endpoint` | String | `https://trace.danielstephenson.dev` | The trace server events are sent to. |
