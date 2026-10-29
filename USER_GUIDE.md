@@ -24,6 +24,8 @@ Democracy is a Spigot plugin that adds democratic elections to Medieval Factions
 
 An election in progress survives a server restart: elections, candidates and votes are saved to `elections.json`, `candidates.json` and `voters.json` in `plugins/Democracy/` each time `/d start`, `/d cancel`, `/d run`, `/d dropout` or `/d vote` changes them, and again when the server stops, and loaded again when it starts. A server that crashes rather than stopping cleanly therefore keeps every change a player was told had succeeded; if a save fails, the cause is reported in the console. If one of those files cannot be read, the plugin reports it in the console and disables itself, leaving the files untouched so they can be repaired. There is not yet a way to conclude an election with a winner, so a faction's election stays in progress until its leader cancels it with `/d cancel`.
 
+An election belongs to a faction by its name (ignoring case), not to the faction itself. If a faction is renamed while its election is in progress, its members no longer see that election — `/d info`, `/d run`, `/d vote` and `/d cancel` all report that there is none — and its leader can start a new one. The old election, with its candidates and votes, is kept under the old name, and so is an election whose faction is disbanded. Any faction that later has that name, including a new faction founded under it, finds the old election as its own.
+
 ### Who Can Start, Run and Vote
 
 - Starting or cancelling an election needs a faction role with Medieval Factions' `DISBAND` faction permission, which by default only the Owner role has. So by default only the faction owner can start or cancel one; another member, and a player in no faction, are refused.
