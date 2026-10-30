@@ -18,7 +18,7 @@ This plugin is supported on the Minecraft versions listed in [`minecraft-version
 
 ## Usage reporting
 
-Usage reporting is on by default: each time the plugin is enabled, and each time one of its commands is run, it sends its name, its version and the command's name to the author's trace server at https://trace.danielstephenson.dev, so it is known which plugins are actually in use. Nothing about players, worlds or IP addresses is sent, and nothing typed after a command is. A command used again within a minute is not sent again: the repeats are counted and sent as one event, tagged `coalesced` with the count, when the minute is up (or when the server stops).
+Usage reporting is on by default: each time the plugin is enabled, and each time a player runs one of its commands, it sends its name, its version and the command's name to the author's trace server at https://trace.danielstephenson.dev, so it is known which plugins are actually in use. Nothing about players, worlds or IP addresses is sent, and nothing typed after a command is. Commands run from the console, a command block or another plugin are not reported. A command used again within a minute is not sent again: the repeats are counted and sent as one event, tagged `coalesced` with the count, when the minute is up (or when the server stops).
 
 Each event also carries a random server ID (the `server-id` line in `plugins/trace/config.yml`) so
 servers can be counted rather than events. It identifies no person, account or IP address; delete
