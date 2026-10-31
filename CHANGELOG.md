@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.4.3] – 2026-10-31
+
+No change to the plugin's behaviour. The usage-reporting comment in the bundled `config.yml`, and the matching text in `README.md` and `CONFIG.md`, now say that only commands run by a player are reported (#84). A server that already has a `config.yml` keeps its own file, so it does not see the new comment.
+
+## [0.4.2] – 2026-10-30
+
 ### Changed
 
 - Repeated usage events are coalesced. The vendored trace client is now 0.7.0 (#76): the first report of an event is sent at once, and identical reports in the following 60 seconds are counted and sent as one event, tagged `coalesced` with the count, when the window closes or the plugin is disabled. The `startup` event is never held back. A command used many times a minute therefore costs one report a minute instead of one per use. What an event carries is unchanged. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.7.0.
