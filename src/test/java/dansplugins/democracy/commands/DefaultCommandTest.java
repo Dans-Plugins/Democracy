@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 class DefaultCommandTest {
 
     @Test
-    void showsVersionAuthorAndWiki() {
+    void showsVersionAuthorAndUserGuide() {
         Democracy democracy = mock(Democracy.class);
         when(democracy.getVersion()).thenReturn("v9.9.9");
         CommandSender sender = mock(CommandSender.class);
@@ -22,7 +22,7 @@ class DefaultCommandTest {
 
         verify(sender).sendMessage(ChatColor.AQUA + "Democracy v9.9.9");
         verify(sender).sendMessage(ChatColor.AQUA + "Developed by: Daniel Stephenson");
-        verify(sender).sendMessage(ChatColor.AQUA + "Wiki: https://github.com/Dans-Plugins/Democracy/wiki");
+        verify(sender).sendMessage(ChatColor.AQUA + "User guide: https://github.com/Dans-Plugins/Democracy/blob/main/USER_GUIDE.md");
     }
 
     @Test

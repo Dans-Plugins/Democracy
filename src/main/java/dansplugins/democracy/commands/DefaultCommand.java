@@ -24,7 +24,7 @@ public class DefaultCommand extends AbstractPluginCommand {
     public boolean execute(CommandSender commandSender) {
         commandSender.sendMessage(ChatColor.AQUA + "Democracy " + democracy.getVersion());
         commandSender.sendMessage(ChatColor.AQUA + "Developed by: Daniel Stephenson");
-        commandSender.sendMessage(ChatColor.AQUA + "Wiki: https://github.com/Dans-Plugins/Democracy/wiki");
+        commandSender.sendMessage(ChatColor.AQUA + "User guide: https://github.com/Dans-Plugins/Democracy/blob/main/USER_GUIDE.md");
         return true;
     }
 
