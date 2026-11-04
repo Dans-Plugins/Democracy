@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- The bare `/d` command now links to the user guide. It used to link to a wiki that has no pages (#89).
+
 ## [0.4.3] – 2026-10-31
 
 No change to the plugin's behaviour. The usage-reporting comment in the bundled `config.yml`, and the matching text in `README.md` and `CONFIG.md`, now say that only commands run by a player are reported (#84). A server that already has a `config.yml` keeps its own file, so it does not see the new comment.

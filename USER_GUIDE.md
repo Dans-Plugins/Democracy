@@ -38,7 +38,7 @@ An election belongs to a faction by its name (ignoring case), not to the faction
 
 | Permission | Default | Description |
 |------------|---------|-------------|
-| `d.default` | `true` | View the plugin's version and links with a bare `/d`. Registered for permission plugins, but not yet checked: a bare `/d` works without it. |
+| `d.default` | `true` | View the plugin's version, author and a link to this guide with a bare `/d`. Registered for permission plugins, but not yet checked: a bare `/d` works without it. |
 | `d.help` | `true` | View the help menu. |
 | `d.info` | `true` | View election information. |
 | `d.run` | `true` | Run as a candidate. |
