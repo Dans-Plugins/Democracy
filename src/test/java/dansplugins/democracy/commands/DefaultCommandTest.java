@@ -5,6 +5,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -23,6 +26,11 @@ class DefaultCommandTest {
         verify(sender).sendMessage(ChatColor.AQUA + "Democracy v9.9.9");
         verify(sender).sendMessage(ChatColor.AQUA + "Developed by: Daniel Stephenson");
         verify(sender).sendMessage(ChatColor.AQUA + "User guide: https://github.com/Dans-Plugins/Democracy/blob/main/USER_GUIDE.md");
+    }
+
+    @Test
+    void theLinkedUserGuideIsInTheRepositoryRoot() {
+        assertTrue(Files.exists(Paths.get("USER_GUIDE.md")));
     }
 
     @Test

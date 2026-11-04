@@ -139,7 +139,7 @@ public final class Democracy extends PonderBukkitPlugin {
      * @return A boolean indicating whether the execution of the command was successful.
      */
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        // Console, command-block and plugin-dispatched commands are not counted.
+        // Only player senders are counted. A plugin running a command as a player is counted too.
         if (sender instanceof Player) {
             trace.report("command", null, Collections.singletonMap("name", cmd.getName()));
         }

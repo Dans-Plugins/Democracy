@@ -26,8 +26,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 /**
- * Pins {@link Democracy#onCommand}: only a player's command is reported to trace, as README.md,
- * CONFIG.md and config.yml promise, and every sender's command still runs. {@code onEnable()}
+ * Pins {@link Democracy#onCommand}: only a command whose sender is a player is reported to trace,
+ * as README.md, CONFIG.md and config.yml promise, and every sender's command still runs. {@code onEnable()}
  * cannot run outside a server, so the client and command service it would set up are put into a
  * mocked plugin directly.
  */
@@ -78,6 +78,13 @@ class DemocracyCommandDispatchTest {
     }
 
     @Test
+    void theCommandsNameIsReportedRatherThanTheLabelTyped() {
+        democracy.onCommand(mock(Player.class), command, "democracy:d", INFO_ARGS);
+
+        verifyCommandReported();
+    }
+
+    @Test
     void aConsoleCommandIsNotReported() {
         democracy.onCommand(mock(ConsoleCommandSender.class), command, "d", INFO_ARGS);
 
@@ -99,6 +106,13 @@ class DemocracyCommandDispatchTest {
     }
 
     @Test
+    void anyOtherSenderThatIsNotAPlayerIsNotReported() {
+        democracy.onCommand(mock(CommandSender.class), command, "d", INFO_ARGS);
+
+        verifyNoInteractions(trace);
+    }
+
+    @Test
     void aBareCommandShowsThePluginInformationWithoutTheCommandService() {
         CommandSender sender = mock(CommandSender.class);
 
@@ -109,12 +123,16 @@ class DemocracyCommandDispatchTest {
     }
 
     @Test
-    void aSubcommandIsHandedToTheCommandServiceAndItsResultReturned() {
+    void aSubcommandThatSucceedsReturnsTrue() {
         Player player = mock(Player.class);
         when(commandService.interpretAndExecuteCommand(player, "d", INFO_ARGS)).thenReturn(true);
 
         assertTrue(democracy.onCommand(player, command, "d", INFO_ARGS));
+    }
 
+    @Test
+    void aSubcommandThatFailsReturnsFalse() {
+        Player player = mock(Player.class);
         when(commandService.interpretAndExecuteCommand(player, "d", INFO_ARGS)).thenReturn(false);
 
         assertFalse(democracy.onCommand(player, command, "d", INFO_ARGS));
@@ -124,8 +142,9 @@ class DemocracyCommandDispatchTest {
     void aConsoleSubcommandStillRunsThoughItIsNotReported() {
         ConsoleCommandSender console = mock(ConsoleCommandSender.class);
 
-        democracy.onCommand(console, command, "democracy", INFO_ARGS);
+        democracy.onCommand(console, command, "d", INFO_ARGS);
 
-        verify(commandService).interpretAndExecuteCommand(console, "democracy", INFO_ARGS);
+        verify(commandService).interpretAndExecuteCommand(console, "d", INFO_ARGS);
+        verifyNoInteractions(trace);
     }
 }
