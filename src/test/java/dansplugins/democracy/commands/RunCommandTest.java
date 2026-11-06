@@ -3,9 +3,11 @@ package dansplugins.democracy.commands;
 import dansplugins.democracy.Democracy;
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.CandidateFactory;
+import dansplugins.democracy.objects.Candidate;
 import dansplugins.democracy.objects.Election;
 import dansplugins.democracy.integrators.FactionLookup;
 import dansplugins.democracy.services.StorageService;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,6 +104,37 @@ class RunCommandTest {
         runCommand.execute(player);
 
         assertFalse(runCommand.execute(player));
+    }
+
+    @Test
+    void aStaleCandidateRecordIsReportedRatherThanConfirmed() {
+        Election election = electionWithStaleCandidateRecord();
+
+        assertFalse(runCommand.execute(player));
+
+        assertFalse(election.isCandidate(playerUUID));
+        verify(player).sendMessage(ChatColor.RED + "Your candidacy could not be recorded. You are not a candidate in this election.");
+        verify(player, never()).sendMessage(ChatColor.GREEN + "You are now a candidate in the election.");
+    }
+
+    @Test
+    void aCandidacyThatWasNotRecordedDoesNotSave() {
+        electionWithStaleCandidateRecord();
+
+        runCommand.execute(player);
+
+        verify(storageService, never()).save();
+    }
+
+    /**
+     * A candidate record the election does not list, which is what a crash between the writes of
+     * elections.json and candidates.json leaves behind after a /d dropout.
+     */
+    private Election electionWithStaleCandidateRecord() {
+        Election election = new Election(player, "TestFaction");
+        persistentData.addElection(election);
+        persistentData.addCandidate(new Candidate(player, election));
+        return election;
     }
 
     @Test
