@@ -32,7 +32,7 @@ An election belongs to a faction by its name (ignoring case), not to the faction
 - A player can only take part in their own faction's election: running and voting both apply to the election of the faction the player is in. Members of other factions, allies included, cannot run or vote in it; if their own faction has no election, they are told so.
 - Players in no faction can neither run nor vote.
 - Each player can vote once per election, for a player who is running in it; a second vote is refused and the first one stands.
-- A candidate can drop out of their faction's election with `/d dropout`; a player who is not running in it is told so, and a player in no faction is refused. Votes already cast for a candidate who drops out are discarded, and the players who cast them cannot vote again in that election. A candidate who drops out can run again with `/d run`, starting from zero votes.
+- A candidate can drop out of their faction's election with `/d dropout`; a player who is not running in it is told so, and a player in no faction is refused. Votes already cast for a candidate who drops out are discarded, and the players who cast them cannot vote again in that election. A candidate who drops out can run again with `/d run`, starting from zero votes. If the server crashed during the drop-out, a leftover candidate record can make `/d run` report that the candidacy could not be recorded. The record can be cleared by removing it from `candidates.json` while the server is stopped, or by the faction leader running `/d cancel`, which discards the whole election.
 
 ## Permissions
 
