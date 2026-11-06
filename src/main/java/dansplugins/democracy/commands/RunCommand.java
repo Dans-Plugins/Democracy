@@ -56,7 +56,11 @@ public class RunCommand extends AbstractPluginCommand {
             return false;
         }
 
-        candidateFactory.createCandidate(player, election);
+        if (candidateFactory.createCandidate(player, election) == null) {
+            player.sendMessage(ChatColor.RED + "Your candidacy could not be recorded. You are not a candidate in this election.");
+            return false;
+        }
+
         storageService.save();
         player.sendMessage(ChatColor.GREEN + "You are now a candidate in the election.");
         return true;

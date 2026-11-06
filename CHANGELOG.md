@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `/d run` now reports a failure when the candidacy could not be recorded. It used to confirm the candidacy regardless, so a player with a leftover candidate record, which a crash during `/d dropout` can leave behind, was told they were a candidate but was not in the election. The new message says the candidacy could not be recorded, and nothing is saved (#95).
+
+## [0.4.4] – 2026-11-05
+
+### Fixed
+
 - The bare `/d` command now links to the user guide. It used to link to a wiki that has no pages (#89).
 
 ## [0.4.3] – 2026-10-31
