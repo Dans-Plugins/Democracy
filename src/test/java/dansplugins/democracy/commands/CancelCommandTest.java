@@ -56,6 +56,13 @@ class CancelCommandTest {
     }
 
     @Test
+    void argumentsAreIgnored() {
+        assertTrue(cancelCommand.execute(player, new String[] { "anything" }));
+
+        assertNull(persistentData.getElectionForFaction("TestFaction"));
+    }
+
+    @Test
     void theLeaderCanCancelTheirFactionsElection() {
         assertTrue(cancelCommand.execute(player));
 

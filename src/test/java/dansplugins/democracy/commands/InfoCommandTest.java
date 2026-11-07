@@ -61,6 +61,14 @@ class InfoCommandTest {
     }
 
     @Test
+    void argumentsAreIgnored() {
+        persistentData.addElection(new Election(player, "TestFaction"));
+
+        assertTrue(infoCommand.execute(player, new String[] { "anything" }));
+        verify(player).sendMessage(ChatColor.AQUA + "=== Election Info ===");
+    }
+
+    @Test
     void failsWhenNoElectionInProgress() {
         assertFalse(infoCommand.execute(player));
     }
