@@ -29,4 +29,13 @@ class HelpCommandTest {
 
         verify(sender).sendMessage(ChatColor.AQUA + "/d cancel");
     }
+
+    @Test
+    void argumentsAreIgnored() {
+        CommandSender sender = mock(CommandSender.class);
+
+        assertTrue(new HelpCommand().execute(sender, new String[] { "anything" }));
+
+        verify(sender).sendMessage(ChatColor.AQUA + "/d help");
+    }
 }

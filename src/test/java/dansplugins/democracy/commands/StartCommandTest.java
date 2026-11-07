@@ -4,6 +4,7 @@ import dansplugins.democracy.Democracy;
 import dansplugins.democracy.data.PersistentData;
 import dansplugins.democracy.factories.ElectionFactory;
 import dansplugins.democracy.integrators.FactionLookup;
+import dansplugins.democracy.objects.Election;
 import dansplugins.democracy.services.StorageService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -13,14 +14,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class StartCommandTest {
+    private Democracy democracy;
     private StartCommand startCommand;
     private PersistentData persistentData;
     private Player player;
@@ -37,7 +41,7 @@ class StartCommandTest {
         when(factionLookup.getFactionName(player)).thenReturn("TestFaction");
         when(factionLookup.leadsFaction(player)).thenReturn(true);
 
-        Democracy democracy = mock(Democracy.class);
+        democracy = mock(Democracy.class);
         when(democracy.getFactionLookup()).thenReturn(factionLookup);
 
         persistentData = new PersistentData();
@@ -80,6 +84,42 @@ class StartCommandTest {
         startCommand.execute(player);
 
         assertFalse(startCommand.execute(player));
+    }
+
+    @Test
+    void aRejectedSecondElectionSaysOneIsInProgressAndDoesNotSaveAgain() {
+        startCommand.execute(player);
+
+        startCommand.execute(player);
+
+        verify(player).sendMessage(ChatColor.RED + "An election is already in progress.");
+        verify(storageService, times(1)).save();
+    }
+
+    @Test
+    void anElectionTheFactoryRefusesIsReportedAndNotSaved() {
+        ElectionFactory refusingFactory = mock(ElectionFactory.class);
+        when(refusingFactory.createElection(player, "TestFaction")).thenReturn(null);
+        StartCommand command = new StartCommand(democracy, refusingFactory, persistentData, storageService);
+
+        assertFalse(command.execute(player));
+        verify(player).sendMessage(ChatColor.RED + "An election is already in progress.");
+        verify(storageService, never()).save();
+    }
+
+    @Test
+    void theElectionBelongsToTheFactionAndRecordsWhoStartedIt() {
+        startCommand.execute(player);
+
+        Election election = persistentData.getElectionForFaction("TestFaction");
+        assertEquals("TestFaction", election.getFactionName());
+        assertEquals(player.getUniqueId(), election.getCreator());
+    }
+
+    @Test
+    void argumentsAreIgnored() {
+        assertTrue(startCommand.execute(player, new String[] { "anything" }));
+        assertTrue(persistentData.getElectionForFaction("TestFaction") != null);
     }
 
     @Test
