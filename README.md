@@ -1,5 +1,7 @@
 # Democracy
 
+![Democracy banner: a Strata render of a test-server world with its Medieval Factions claims tinted in the factions' colours](docs/images/banner.jpg)
+
 ![Starting an election, standing as a candidate and voting, then /d info showing the vote count](docs/images/election.png)
 
 *Real in-game output from Democracy 0.4.0 on a local throwaway Paper 1.21.11 test server: the commands were typed by a scripted bot client, and the chat it received is drawn as Minecraft-style chat (typed commands appear in the input bars; grey lines say what happened between commands).*
