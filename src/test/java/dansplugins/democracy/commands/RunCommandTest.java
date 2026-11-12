@@ -51,6 +51,15 @@ class RunCommandTest {
     }
 
     @Test
+    void argumentsAreIgnored() {
+        Election election = new Election(player, "TestFaction");
+        persistentData.addElection(election);
+
+        assertTrue(runCommand.execute(player, new String[] { "anything" }));
+        assertTrue(election.isCandidate(playerUUID));
+    }
+
+    @Test
     void failsWhenNotInFaction() {
         when(factionLookup.getFactionName(player)).thenReturn(null);
 

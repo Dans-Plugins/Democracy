@@ -123,6 +123,24 @@ class VoteCommandTest {
     }
 
     @Test
+    void onlyTheFirstArgumentNamesTheCandidate() {
+        assertTrue(voteCommand.execute(voter, new String[] { "CandidateName", "OtherCandidateName" }));
+
+        assertEquals(1, persistentData.getCandidate(election.getUUID(), candidateUUID).getNumVoter());
+        assertEquals(0, persistentData.getCandidate(election.getUUID(), otherCandidateUUID).getNumVoter());
+    }
+
+    @Test
+    void aCandidateCanVoteForThemselves() {
+        when(factionLookup.getFactionName(candidatePlayer)).thenReturn("TestFaction");
+
+        assertTrue(voteCommand.execute(candidatePlayer, new String[] { "CandidateName" }));
+
+        assertEquals(1, persistentData.getCandidate(election.getUUID(), candidateUUID).getNumVoter());
+        assertTrue(election.isVoter(candidateUUID));
+    }
+
+    @Test
     void theConsoleCannotVote() {
         CommandSender console = mock(CommandSender.class);
 

@@ -103,4 +103,13 @@ class MedievalFactionsLookupTest {
         inFaction("Alpha", true);
         assertTrue(lookup.leadsFaction(player));
     }
+
+    @Test
+    void aMemberWithNoRoleDoesNotLeadTheFaction() {
+        MfFaction faction = inFaction("Alpha", true);
+        when(faction.getRoleByPlayerId(PLAYER_ID)).thenReturn(null);
+
+        assertEquals("Alpha", lookup.getFactionName(player));
+        assertFalse(lookup.leadsFaction(player));
+    }
 }
