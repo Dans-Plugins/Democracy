@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.4.6] – 2026-11-16
+
+No change to the plugin's behaviour. `README.md` now opens with a banner image, which the SpigotMC listing shows at the top of its description (#102). The rest of the release adds tests only (#101, #103).
+
 ## [0.4.5] – 2026-11-07
 
 ### Fixed
