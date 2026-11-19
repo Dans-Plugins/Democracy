@@ -21,6 +21,7 @@ import dansplugins.democracy.commands.VoteCommand;
 import dansplugins.democracy.services.ConfigService;
 import dansplugins.democracy.services.StorageService;
 import dansplugins.democracy.trace.TraceClient;
+import dansplugins.democracy.trace.UsageReportingSetting;
 import dansplugins.democracy.utils.Logger;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 import preponderous.ponder.minecraft.bukkit.abs.PonderBukkitPlugin;
@@ -123,6 +124,24 @@ public final class Democracy extends PonderBukkitPlugin {
     /**
      * This runs when the server stops.
      */
+    /**
+     * Every save of config.yml goes through here. A file Bukkit could not parse was loaded as
+     * empty, so saving would replace it with the bundled defaults, usage reporting switched on
+     * included; it is left alone instead. An opt-out written into the file by hand while the
+     * server runs is carried into the loaded copy first, so a save cannot turn reporting back on.
+     */
+    @Override
+    public void saveConfig() {
+        File configFile = new File(getDataFolder(), "config.yml");
+        if (UsageReportingSetting.isUnparseable(configFile)) {
+            getLogger().severe("config.yml could not be read, so it was not overwritten. Fix the YAML error in it and restart; "
+                    + "until then the defaults are used, and usage reporting is off.");
+            return;
+        }
+        UsageReportingSetting.keepOptOutFromDisk(getConfig(), configFile);
+        super.saveConfig();
+    }
+
     @Override
     public void onDisable() {
         storageService.save();
