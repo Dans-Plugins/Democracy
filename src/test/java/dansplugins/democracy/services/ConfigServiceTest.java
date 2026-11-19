@@ -8,10 +8,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,6 +34,9 @@ class ConfigServiceTest {
     private CommandSender sender;
     private Democracy democracy;
 
+    @TempDir
+    File dataFolder;
+
     @BeforeEach
     void setUp() {
         config = mock(FileConfiguration.class);
@@ -38,6 +44,7 @@ class ConfigServiceTest {
 
         democracy = mock(Democracy.class);
         when(democracy.getConfig()).thenReturn(config);
+        when(democracy.getDataFolder()).thenReturn(dataFolder);
 
         configService = new ConfigService(democracy);
     }
@@ -151,7 +158,7 @@ class ConfigServiceTest {
         // block in its config.yml. Bukkit's one-argument getters fall through
         // to the jar's defaults; the two-argument ones would return their
         // fallback and turn reporting off on every existing installation.
-        when(config.getBoolean("usage-reporting.enabled")).thenReturn(true);
+        when(config.get("usage-reporting.enabled")).thenReturn(true);
         when(config.getString("usage-reporting.endpoint")).thenReturn("https://trace.danielstephenson.dev");
         when(config.getString("usage-reporting.key")).thenReturn("bundled-key");
 
@@ -181,5 +188,47 @@ class ConfigServiceTest {
         assertFalse(configService.isUsageReportingEnabled());
         assertEquals("http://localhost:8080", configService.getUsageReportingEndpoint());
         assertEquals("abc", configService.getUsageReportingKey());
+    }
+
+    @Test
+    void usageReporting_aQuotedFalseTurnsReportingOff() {
+        // getBoolean() would return the bundled default, true, for the string "false".
+        when(config.get("usage-reporting.enabled")).thenReturn("false");
+
+        assertFalse(configService.isUsageReportingEnabled());
+    }
+
+    @Test
+    void usageReporting_anOptOutOnDiskWinsOverTheLoadedConfig() throws Exception {
+        // The operator turned reporting off by hand after the config was loaded.
+        writeConfig("usage-reporting:\n  enabled: false\n");
+        when(config.get("usage-reporting.enabled")).thenReturn(true);
+
+        assertFalse(configService.isUsageReportingEnabled());
+    }
+
+    @Test
+    void usageReporting_aFileBukkitCannotParseKeepsReportingOff() throws Exception {
+        // Bukkit loads such a file as empty, so the loaded config falls through to the bundled true.
+        writeConfig("usage-reporting:\n  enabled: false\n\tbroken: [\n");
+        when(config.get("usage-reporting.enabled")).thenReturn(true);
+
+        assertFalse(configService.isUsageReportingEnabled());
+    }
+
+    @Test
+    void setConfigOptionFalseTurnsReportingOff() {
+        // setConfigOption() stores any option but debugMode as a string.
+        YamlConfiguration loaded = new YamlConfiguration();
+        loaded.set("usage-reporting.enabled", true);
+        when(democracy.getConfig()).thenReturn(loaded);
+
+        configService.setConfigOption("usage-reporting.enabled", "false", sender);
+
+        assertFalse(configService.isUsageReportingEnabled());
+    }
+
+    private void writeConfig(String contents) throws Exception {
+        Files.write(new File(dataFolder, "config.yml").toPath(), contents.getBytes(StandardCharsets.UTF_8));
     }
 }

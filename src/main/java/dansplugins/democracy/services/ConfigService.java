@@ -8,9 +8,12 @@ package dansplugins.democracy.services;
  */
 
 import dansplugins.democracy.Democracy;
+import dansplugins.democracy.trace.UsageReportingSetting;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import java.io.File;
 
 /**
  * @author Daniel McCoy Stephenson
@@ -132,8 +135,18 @@ public class ConfigService {
     // hand-trimmed config.yml or a plugins directory that could not be written
     // to. Verified against YamlConfiguration, not assumed.
 
+    /**
+     * Fails closed: only true, on or yes turns reporting on, so a quoted "false" or a typo
+     * turns it off (getBoolean() would return the bundled true for them), and an opt-out in
+     * config.yml on disk wins over the copy loaded at startup.
+     */
     public boolean isUsageReportingEnabled() {
-        return getBoolean(USAGE_REPORTING_ENABLED_KEY);
+        return UsageReportingSetting.isEnabled(getConfig(), getConfigFile());
+    }
+
+    /** The plugin's config.yml, which may not exist yet. */
+    public File getConfigFile() {
+        return new File(democracy.getDataFolder(), "config.yml");
     }
 
     public String getUsageReportingEndpoint() {
